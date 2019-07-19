@@ -1,49 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnExplode"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="Explode"
-        android:textSize="25sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintDimensionRatio="4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnCollapse"
-        app:layout_constraintWidth_percent="0.7"
-        tools:ignore="HardcodedText" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnCollapse"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="Collapse"
-        android:textSize="25sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnExplode"
-        app:layout_constraintWidth_percent="0.7"
-        tools:ignore="HardcodedText" />
-
-    <com.zuluft.lib.ExplosionView
-        android:id="@+id/explosionView"
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="20dp"
-        app:moveFactor="2"
-        app:animDuration="30000"
-        app:shardItemsCount="80"
-        app:horizontalOffset="0dp"
-        app:itemSize="30dp"
-        app:spreadDirection="TOP" />
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_main_screen" />
+
+    <View
+        android:id="@+id/vToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/colorPrimary"
+        android:elevation="@dimen/main_screen_toolbar_elevation"
+        android:outlineProvider="bounds"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/main_screen_toolbar_text_elevation"
+        android:fontFamily="@font/open_sans_bold"
+        android:includeFontPadding="false"
+        android:letterSpacing="0.2"
+        android:textAllCaps="true"
+        android:textColor="@color/main_screen_toolbar_text_color"
+        android:textSize="@dimen/main_screen_toolbar_text_size"
+        app:layout_constraintBottom_toBottomOf="@id/vToolbar"
+        app:layout_constraintEnd_toEndOf="@id/vToolbar"
+        app:layout_constraintStart_toStartOf="@id/vToolbar"
+        app:layout_constraintTop_toTopOf="@id/vToolbar" />
+
+    <FrameLayout
+        android:id="@+id/flContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vToolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

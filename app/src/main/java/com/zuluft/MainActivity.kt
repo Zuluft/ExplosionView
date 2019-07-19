@@ -1,23 +1,28 @@
 package com.zuluft
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import com.zuluft.lib.ExplosionView
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity :
+        AppCompatActivity(),
+        ContainerWithTitle {
+
+    override fun setTitle(title: String) {
+        tvTitle.text = title
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val explosionView = findViewById<ExplosionView>(R.id.explosionView)
-        findViewById<View>(R.id.btnExplode)
-                .setOnClickListener {
-                    explosionView.explode()
-                }
-        findViewById<View>(R.id.btnCollapse)
-                .setOnClickListener {
-                    explosionView.collapse()
-                }
+        if (supportFragmentManager.findFragmentById(R.id.flContent) == null) {
+            supportFragmentManager
+                    .beginTransaction()
+                    .add(
+                            R.id.flContent,
+                            MatchConfirmationFragment()
+                    )
+                    .commit()
+        }
     }
 }

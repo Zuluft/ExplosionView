@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ExplosionView</string>
+    <string name="match_confirmation_screen_title_text">Perfect match</string>
+    <string name="match_confirmation_screen_header_text">congratulations!</string>
 </resources>

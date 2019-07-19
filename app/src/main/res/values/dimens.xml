@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="main_screen_toolbar_elevation">20dp</dimen>
+    <dimen name="main_screen_toolbar_text_size">18sp</dimen>
+    <dimen name="main_screen_toolbar_text_elevation">21dp</dimen>
+    <dimen name="match_confirmation_screen_header_text_size">19sp</dimen>
+</resources>

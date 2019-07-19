@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#2c2e39</color>
+    <color name="colorPrimaryDark">#2c2e39</color>
+    <color name="colorAccent">#d9318e</color>
+    <color name="primaryTextColor">#ffffff</color>
+    <color name="main_screen_toolbar_text_color">@color/primaryTextColor</color>
+    <color name="match_confirmation_screen_header_text_color">@color/colorAccent</color>
+    <color name="match_confirmation_screen_description_text_color">@color/primaryTextColor</color>
+    <color name="match_confirmation_screen_username_text_color">@color/primaryTextColor</color>
+    <color name="match_confirmation_screen_start_chat_btn_text_color">@color/primaryTextColor
+    </color>
+    <color name="match_confirmation_screen_search_more_btn_text_color">@color/primaryTextColor
+    </color>
+    <color name="match_confirmation_screen_start_chat_btn_bg_color">@color/colorAccent</color>
+    <color name="match_confirmation_screen_search_more_btn_bg_color">@color/colorPrimary</color>
 </resources>
