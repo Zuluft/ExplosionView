@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 
 
-class BitmapShardItem
+class DrawableShardItem
 constructor(private val bitmapDrawable: BitmapDrawable) :
         ShardItem {
 

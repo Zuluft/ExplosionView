@@ -21,15 +21,20 @@ import kotlin.collections.ArrayList
 
 
 class ExplosionView :
-        View, ViewTreeObserver.OnPreDrawListener {
+    View,
+    ViewTreeObserver.OnPreDrawListener {
     private val animationDuration: Long
 
     private val itemSize: Int
 
     private val shardItemsCount: Int
-    private val minScale: Float
 
+    private val minScale: Float
     private val maxScale: Float
+
+    private val minAlpha: Float
+    private val maxAlpha: Float
+
     private val moveFactor: Float
 
     private val horizontalOffset: Int
@@ -38,16 +43,15 @@ class ExplosionView :
 
     private val random = Random()
 
-    private val bitmapDrawable: BitmapDrawable
+    private val drawable: BitmapDrawable
 
-    private val itemsToMove: ArrayList<BitmapShardItem> = ArrayList()
+    private val itemsToMove: ArrayList<DrawableShardItem> = ArrayList()
 
     private var anim: AnimatorSet? = null
 
     private var shouldStartAnim = false
 
     constructor(context: Context) : this(context, null)
-
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
@@ -63,42 +67,57 @@ class ExplosionView :
         val defaultMinScale = typedValue.float
         resources.getValue(R.dimen.defaultMaxScale, typedValue, true)
         val defaultMaxScale = typedValue.float
+        resources.getValue(R.dimen.defaultMinAlpha, typedValue, true)
+        val defaultMinAlpha = typedValue.float
+        resources.getValue(R.dimen.defaultMaxAlpha, typedValue, true)
+        val defaultMaxAlpha = typedValue.float
         val defaultHorizontalOffset = resources
-                .getDimensionPixelSize(R.dimen.defaultHorizontalOffset)
+            .getDimensionPixelSize(R.dimen.defaultHorizontalOffset)
         val defaultSpreadDirection = resources
-                .getInteger(R.integer.defaultSpreadDirection)
+            .getInteger(R.integer.defaultSpreadDirection)
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ExplosionView)
         itemSize = typedArray.getDimensionPixelSize(
-                R.styleable.ExplosionView_itemSize,
-                defaultItemSize)
+            R.styleable.ExplosionView_itemSize,
+            defaultItemSize
+        )
         shardItemsCount = typedArray.getInteger(
-                R.styleable.ExplosionView_shardItemsCount,
-                defaultShardItemsCount)
+            R.styleable.ExplosionView_shardItemsCount,
+            defaultShardItemsCount
+        )
         moveFactor = typedArray.getFloat(R.styleable.ExplosionView_moveFactor, defaultMoveFactor)
         animationDuration = typedArray.getInt(
-                R.styleable.ExplosionView_animDuration,
-                defaultAnimDuration).toLong()
+            R.styleable.ExplosionView_animDuration,
+            defaultAnimDuration
+        ).toLong()
         minScale = typedArray.getFloat(R.styleable.ExplosionView_minScale, defaultMinScale)
         maxScale = typedArray.getFloat(R.styleable.ExplosionView_maxScale, defaultMaxScale)
+        minAlpha = typedArray.getFloat(R.styleable.ExplosionView_minAlpha, defaultMinAlpha)
+        maxAlpha = typedArray.getFloat(R.styleable.ExplosionView_maxAlpha, defaultMaxAlpha)
         horizontalOffset = typedArray.getDimensionPixelSize(
-                R.styleable.ExplosionView_horizontalOffset,
-                defaultHorizontalOffset)
-        spreadDirection = getSpreadDirection(
-                if (typedArray.hasValue(R.styleable.ExplosionView_spreadDirection)) {
-                    typedArray.getInt(R.styleable.ExplosionView_spreadDirection,
-                            defaultSpreadDirection)
-                } else {
-                    defaultSpreadDirection
-                }
+            R.styleable.ExplosionView_horizontalOffset,
+            defaultHorizontalOffset
         )
-        bitmapDrawable = (if (typedArray.hasValue(R.styleable.ExplosionView_shardDrawable)) {
+        spreadDirection = getSpreadDirection(
+            if (typedArray.hasValue(R.styleable.ExplosionView_spreadDirection)) {
+                typedArray.getInt(
+                    R.styleable.ExplosionView_spreadDirection,
+                    defaultSpreadDirection
+                )
+            } else {
+                defaultSpreadDirection
+            }
+        )
+        drawable = (if (typedArray.hasValue(R.styleable.ExplosionView_shardDrawable)) {
             typedArray.getDrawable(R.styleable.ExplosionView_shardDrawable)
         } else {
             ContextCompat.getDrawable(context, R.drawable.default_shard_drawable)
         }) as? BitmapDrawable
-                ?: throw IllegalStateException("ShardDrawable should be BitmapDrawable")
+            ?: throw IllegalStateException("ShardDrawable should be BitmapDrawable")
         if (minScale > maxScale) {
             throw IllegalStateException("minScale should be less then maxScale")
+        }
+        if (minAlpha > maxAlpha) {
+            throw IllegalStateException("minAlpha should be less then maxAlpha")
         }
         if (moveFactor <= 0f) {
             throw IllegalStateException("moveFactor should be positive float")
@@ -123,16 +142,17 @@ class ExplosionView :
         return false
     }
 
-    private fun createBitmapShardItem(): BitmapShardItem {
-        return BitmapShardItem(BitmapDrawable(resources, bitmapDrawable.bitmap)
-                .apply {
-                    setBounds(0, 0, itemSize, itemSize)
-                })
-                .apply {
-                    setScale(getRandomScale())
-                    setX(getRandomX())
-                    setY(getInitialY())
-                }
+    private fun createBitmapShardItem(): DrawableShardItem {
+        return DrawableShardItem(BitmapDrawable(resources, drawable.bitmap)
+            .apply {
+                setBounds(0, 0, itemSize, itemSize)
+            })
+            .apply {
+                setScale(getRandomScale())
+                setX(getRandomX())
+                setY(getInitialY())
+                setAlpha(getRandomAlpha())
+            }
     }
 
     private fun getInitialY(): Int {
@@ -144,6 +164,10 @@ class ExplosionView :
 
     private fun getRandomScale(): Float {
         return random.nextFloat() * (maxScale - minScale) + minScale
+    }
+
+    private fun getRandomAlpha(): Float {
+        return random.nextFloat() * (maxAlpha - minAlpha) + minAlpha
     }
 
     private fun getRandomX(): Int {
@@ -161,12 +185,12 @@ class ExplosionView :
                 val x3 = getRandomX()
                 val y3 = startY + getMoveDistance()
                 cubicTo(
-                        startX.toFloat(),
-                        startY.toFloat(),
-                        x2.toFloat(),
-                        y2.toFloat(),
-                        x3.toFloat(),
-                        y3.toFloat()
+                    startX.toFloat(),
+                    startY.toFloat(),
+                    x2.toFloat(),
+                    y2.toFloat(),
+                    x3.toFloat(),
+                    y3.toFloat()
                 )
                 startY = y3
                 startX = x3
@@ -188,17 +212,17 @@ class ExplosionView :
         }).toInt()
     }
 
-    private fun getItemAnimator(shardItem: BitmapShardItem): Animator {
+    private fun getItemAnimator(shardItem: DrawableShardItem): Animator {
         val path = createItemPath()
         val animator = ObjectAnimator
-                .ofInt(shardItem, BitmapShardItem.X, BitmapShardItem.Y, path)
-                .apply {
-                    duration = animationDuration
-                    interpolator = LinearInterpolator()
-                    startDelay = (random.nextFloat() * animationDuration).toLong()
-                    repeatMode = ObjectAnimator.RESTART
-                    repeatCount = ObjectAnimator.INFINITE
-                }
+            .ofInt(shardItem, DrawableShardItem.X, DrawableShardItem.Y, path)
+            .apply {
+                duration = animationDuration
+                interpolator = LinearInterpolator()
+                startDelay = (random.nextFloat() * animationDuration).toLong()
+                repeatMode = ObjectAnimator.RESTART
+                repeatCount = ObjectAnimator.INFINITE
+            }
         animator.addUpdateListener {
             invalidate()
         }

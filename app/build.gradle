@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.zuluft"
+        applicationId "com.zuluft.explosionview"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1

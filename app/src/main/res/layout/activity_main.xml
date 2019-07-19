@@ -40,7 +40,7 @@
         android:layout_height="match_parent"
         android:elevation="20dp"
         app:moveFactor="2"
-        app:animDuration="3000"
+        app:animDuration="30000"
         app:shardItemsCount="80"
         app:horizontalOffset="0dp"
         app:itemSize="30dp"

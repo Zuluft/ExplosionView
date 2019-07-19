@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ExplosionView">
-        <attr name="itemSize" format="dimension" />
-        <attr name="shardItemsCount" format="integer" />
-        <attr name="shardDrawable" format="integer" />
-        <attr name="moveFactor" format="float" />
-        <attr name="animDuration" format="integer" />
-        <attr name="minScale" format="float" />
-        <attr name="maxScale" format="float" />
-        <attr name="horizontalOffset" format="dimension" />
+        <attr name="itemSize" format="dimension"/>
+        <attr name="shardItemsCount" format="integer"/>
+        <attr name="shardDrawable" format="integer"/>
+        <attr name="moveFactor" format="float"/>
+        <attr name="animDuration" format="integer"/>
+        <attr name="minScale" format="float"/>
+        <attr name="maxScale" format="float"/>
+        <attr name="minAlpha" format="float"/>
+        <attr name="maxAlpha" format="float"/>
+        <attr name="horizontalOffset" format="dimension"/>
         <attr name="spreadDirection" format="enum">
-            <enum name="TOP" value="0" />
-            <enum name="BOTTOM" value="1" />
+            <enum name="TOP" value="0"/>
+            <enum name="BOTTOM" value="1"/>
         </attr>
     </declare-styleable>
 
@@ -21,6 +23,8 @@
     <integer name="defaultAnimDuration">10000</integer>
     <item name="defaultMinScale" format="float" type="dimen">0.7</item>
     <item name="defaultMaxScale" format="float" type="dimen">1.1</item>
+    <item name="defaultMinAlpha" format="float" type="dimen">0.5</item>
+    <item name="defaultMaxAlpha" format="float" type="dimen">1</item>
     <dimen name="defaultHorizontalOffset">1dp</dimen>
     <integer name="defaultSpreadDirection">0</integer>
 </resources>
