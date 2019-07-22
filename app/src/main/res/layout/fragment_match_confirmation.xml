@@ -17,15 +17,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/open_sans_bold"
+        android:includeFontPadding="false"
         android:letterSpacing="0.25"
         android:text="@string/match_confirmation_screen_header_text"
         android:textAllCaps="true"
-        android:includeFontPadding="false"
         android:textColor="@color/match_confirmation_screen_header_text_color"
         android:textSize="@dimen/match_confirmation_screen_header_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topGuideline" />
+
+    <com.zuluft.lib.ExplosionView
+        android:id="@+id/explosionView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

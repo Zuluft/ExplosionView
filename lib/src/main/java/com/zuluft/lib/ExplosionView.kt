@@ -1,261 +1,120 @@
 package com.zuluft.lib
 
-import android.animation.Animator
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Path
-import android.graphics.drawable.BitmapDrawable
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.TypedValue
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.animation.LinearInterpolator
-import androidx.core.content.ContextCompat
-import java.lang.IllegalStateException
-import java.util.*
-import kotlin.collections.ArrayList
+import java.lang.ref.WeakReference
 
 
 class ExplosionView :
-    View,
-    ViewTreeObserver.OnPreDrawListener {
-    private val animationDuration: Long
+        View,
+        ViewTreeObserver.OnPreDrawListener {
 
-    private val itemSize: Int
 
-    private val shardItemsCount: Int
+    private var explosionViewSettings: ExplosionViewSettings
+    private var drawableShardItemsHolder: DrawableShardItemsHolder? = null
 
-    private val minScale: Float
-    private val maxScale: Float
-
-    private val minAlpha: Float
-    private val maxAlpha: Float
-
-    private val moveFactor: Float
-
-    private val horizontalOffset: Int
-
-    private val spreadDirection: SpreadDirection
-
-    private val random = Random()
-
-    private val drawable: BitmapDrawable
-
-    private val itemsToMove: ArrayList<DrawableShardItem> = ArrayList()
-
-    private var anim: AnimatorSet? = null
+    private var selectedShardItem: DrawableShardItem? = null
 
     private var shouldStartAnim = false
 
-    constructor(context: Context) : this(context, null)
+    constructor(explosionViewSettings: ExplosionViewSettings) : super(explosionViewSettings.context) {
+        this.explosionViewSettings = explosionViewSettings
+    }
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr) {
-        val typedValue = TypedValue()
-        val defaultItemSize = resources.getDimensionPixelSize(R.dimen.defaultItemSize)
-        val defaultShardItemsCount = resources.getInteger(R.integer.defaultShardItemsCount)
-        resources.getValue(R.dimen.defaultMoveFactor, typedValue, true)
-        val defaultMoveFactor = typedValue.float
-        val defaultAnimDuration = resources.getInteger(R.integer.defaultAnimDuration)
-        resources.getValue(R.dimen.defaultMinScale, typedValue, true)
-        val defaultMinScale = typedValue.float
-        resources.getValue(R.dimen.defaultMaxScale, typedValue, true)
-        val defaultMaxScale = typedValue.float
-        resources.getValue(R.dimen.defaultMinAlpha, typedValue, true)
-        val defaultMinAlpha = typedValue.float
-        resources.getValue(R.dimen.defaultMaxAlpha, typedValue, true)
-        val defaultMaxAlpha = typedValue.float
-        val defaultHorizontalOffset = resources
-            .getDimensionPixelSize(R.dimen.defaultHorizontalOffset)
-        val defaultSpreadDirection = resources
-            .getInteger(R.integer.defaultSpreadDirection)
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ExplosionView)
-        itemSize = typedArray.getDimensionPixelSize(
-            R.styleable.ExplosionView_itemSize,
-            defaultItemSize
-        )
-        shardItemsCount = typedArray.getInteger(
-            R.styleable.ExplosionView_shardItemsCount,
-            defaultShardItemsCount
-        )
-        moveFactor = typedArray.getFloat(R.styleable.ExplosionView_moveFactor, defaultMoveFactor)
-        animationDuration = typedArray.getInt(
-            R.styleable.ExplosionView_animDuration,
-            defaultAnimDuration
-        ).toLong()
-        minScale = typedArray.getFloat(R.styleable.ExplosionView_minScale, defaultMinScale)
-        maxScale = typedArray.getFloat(R.styleable.ExplosionView_maxScale, defaultMaxScale)
-        minAlpha = typedArray.getFloat(R.styleable.ExplosionView_minAlpha, defaultMinAlpha)
-        maxAlpha = typedArray.getFloat(R.styleable.ExplosionView_maxAlpha, defaultMaxAlpha)
-        horizontalOffset = typedArray.getDimensionPixelSize(
-            R.styleable.ExplosionView_horizontalOffset,
-            defaultHorizontalOffset
-        )
-        spreadDirection = getSpreadDirection(
-            if (typedArray.hasValue(R.styleable.ExplosionView_spreadDirection)) {
-                typedArray.getInt(
-                    R.styleable.ExplosionView_spreadDirection,
-                    defaultSpreadDirection
-                )
-            } else {
-                defaultSpreadDirection
-            }
-        )
-        drawable = (if (typedArray.hasValue(R.styleable.ExplosionView_shardDrawable)) {
-            typedArray.getDrawable(R.styleable.ExplosionView_shardDrawable)
-        } else {
-            ContextCompat.getDrawable(context, R.drawable.default_shard_drawable)
-        }) as? BitmapDrawable
-            ?: throw IllegalStateException("ShardDrawable should be BitmapDrawable")
-        if (minScale > maxScale) {
-            throw IllegalStateException("minScale should be less then maxScale")
-        }
-        if (minAlpha > maxAlpha) {
-            throw IllegalStateException("minAlpha should be less then maxAlpha")
-        }
-        if (moveFactor <= 0f) {
-            throw IllegalStateException("moveFactor should be positive float")
-        }
-        typedArray.recycle()
+        this.explosionViewSettings = ExplosionViewSettings.builder(context, attrs).build()
+    }
+
+    init {
         viewTreeObserver.addOnPreDrawListener(this)
     }
 
+
+
+    //todo call performClick
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when {
+            event.action == MotionEvent.ACTION_DOWN -> {
+                selectedShardItem =
+                        drawableShardItemsHolder!!
+                                .findShardItemByLocation(event.x.toInt(), event.y.toInt())
+                if (selectedShardItem != null) {
+                    drawableShardItemsHolder?.detachAnim(selectedShardItem!!)
+                }
+                return true
+            }
+            event.action == MotionEvent.ACTION_MOVE -> {
+                if (selectedShardItem != null) {
+                    selectedShardItem?.setX(event.x.toInt())
+                    selectedShardItem?.setY(event.y.toInt())
+                    invalidate()
+                    return true
+                }
+                return false
+            }
+            event.action == MotionEvent.ACTION_UP -> {
+                if (selectedShardItem != null) {
+                    drawableShardItemsHolder?.attachAnim(selectedShardItem!!)
+                    selectedShardItem = null
+                    return true
+                }
+                return false
+            }
+        }
+        return super.onTouchEvent(event)
+    }
+
     override fun onPreDraw(): Boolean {
-        for (i in 0 until shardItemsCount) {
-            itemsToMove.add(createBitmapShardItem())
-        }
-        val animators = itemsToMove.map {
-            getItemAnimator(it)
-        }
-        anim = AnimatorSet()
-        anim!!.playTogether(animators)
+        drawableShardItemsHolder =
+                DrawableShardItemsHolder(
+                        width,
+                        height,
+                        explosionViewSettings,
+                        WeakReference(this)
+                )
         if (shouldStartAnim) {
-            anim!!.start()
+            drawableShardItemsHolder!!.startAnim()
         }
         viewTreeObserver.removeOnPreDrawListener(this)
         return false
     }
 
-    private fun createBitmapShardItem(): DrawableShardItem {
-        return DrawableShardItem(BitmapDrawable(resources, drawable.bitmap)
-            .apply {
-                setBounds(0, 0, itemSize, itemSize)
-            })
-            .apply {
-                setScale(getRandomScale())
-                setX(getRandomX())
-                setY(getInitialY())
-                setAlpha(getRandomAlpha())
-            }
-    }
-
-    private fun getInitialY(): Int {
-        return when (spreadDirection) {
-            Top -> height + itemSize
-            else -> -itemSize
-        }
-    }
-
-    private fun getRandomScale(): Float {
-        return random.nextFloat() * (maxScale - minScale) + minScale
-    }
-
-    private fun getRandomAlpha(): Float {
-        return random.nextFloat() * (maxAlpha - minAlpha) + minAlpha
-    }
-
-    private fun getRandomX(): Int {
-        return (random.nextFloat() * (width - horizontalOffset - itemSize) + horizontalOffset).toInt()
-    }
-
-    private fun createItemPath(): Path {
-        return Path().apply {
-            var startY = getInitialY()
-            var startX = getRandomX()
-            moveTo(startX.toFloat(), startY.toFloat())
-            while (isInBounds(startY)) {
-                val x2 = getRandomX()
-                val y2 = startY + getMoveDistance() / 2
-                val x3 = getRandomX()
-                val y3 = startY + getMoveDistance()
-                cubicTo(
-                    startX.toFloat(),
-                    startY.toFloat(),
-                    x2.toFloat(),
-                    y2.toFloat(),
-                    x3.toFloat(),
-                    y3.toFloat()
-                )
-                startY = y3
-                startX = x3
-            }
-        }
-    }
-
-    private fun isInBounds(value: Int): Boolean {
-        return when (spreadDirection) {
-            Top -> value >= 0
-            else -> value <= height
-        }
-    }
-
-    private fun getMoveDistance(): Int {
-        return (height * moveFactor * when (spreadDirection) {
-            Top -> -1
-            else -> 1
-        }).toInt()
-    }
-
-    private fun getItemAnimator(shardItem: DrawableShardItem): Animator {
-        val path = createItemPath()
-        val animator = ObjectAnimator
-            .ofInt(shardItem, DrawableShardItem.X, DrawableShardItem.Y, path)
-            .apply {
-                duration = animationDuration
-                interpolator = LinearInterpolator()
-                startDelay = (random.nextFloat() * animationDuration).toLong()
-                repeatMode = ObjectAnimator.RESTART
-                repeatCount = ObjectAnimator.INFINITE
-            }
-        animator.addUpdateListener {
-            invalidate()
-        }
-        return animator
-    }
 
     fun explode() {
-        if (anim == null) {
+        if (drawableShardItemsHolder == null) {
             shouldStartAnim = true
-        } else if (!anim!!.isRunning) {
-            anim!!.start()
+        } else if (!drawableShardItemsHolder!!.isAnimRunning()) {
+            drawableShardItemsHolder!!.startAnim()
         }
     }
 
     fun collapse() {
-        if (anim != null && anim!!.isRunning) {
-            anim!!.removeAllListeners()
-            anim!!.end()
+        if (drawableShardItemsHolder != null && drawableShardItemsHolder!!.isAnimRunning()) {
+            drawableShardItemsHolder!!.endAnim()
             shouldStartAnim = false
         }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (anim != null) {
-            anim!!.cancel()
-            anim = null
+        if (drawableShardItemsHolder != null) {
+            drawableShardItemsHolder!!.endAnim()
+            drawableShardItemsHolder = null
         }
     }
 
     override fun onSaveInstanceState(): Parcelable? {
         val savedState = SavedState(super.onSaveInstanceState())
-        savedState.isAnimRunning = anim != null && anim!!.isRunning
+        savedState.isAnimRunning = drawableShardItemsHolder != null && drawableShardItemsHolder!!.isAnimRunning()
         return savedState
     }
 
@@ -301,9 +160,7 @@ class ExplosionView :
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        itemsToMove.forEach {
-            it.draw(canvas)
-        }
+        drawableShardItemsHolder?.draw(canvas)
     }
 
 }

@@ -1,9 +1,9 @@
 package com.zuluft.lib
 
 
-sealed class SpreadDirection(value: Int)
-object Top : SpreadDirection(0)
-object Bottom : SpreadDirection(1)
+sealed class SpreadDirection
+object Top : SpreadDirection()
+object Bottom : SpreadDirection()
 
 fun getSpreadDirection(id: Int): SpreadDirection {
     return when (id) {

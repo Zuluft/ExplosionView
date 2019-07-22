@@ -1,10 +1,9 @@
 package com.zuluft.lib
 
 import android.graphics.Canvas
-import android.graphics.Point
 
 
-interface ShardItem {
+internal interface ShardItem {
 
     fun setX(x: Int)
 
@@ -15,4 +14,14 @@ interface ShardItem {
     fun setScale(scale: Float)
 
     fun draw(canvas: Canvas)
+
+    fun getX(): Int
+
+    fun getY(): Int
+
+    fun getAlpha(): Float
+
+    fun getScale(): Float
+
+    fun contains(x: Int, y: Int): Boolean
 }
