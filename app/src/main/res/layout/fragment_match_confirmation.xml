@@ -1,36 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/topGuideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.05" />
+            android:id="@+id/topGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.05"/>
 
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/open_sans_bold"
-        android:includeFontPadding="false"
-        android:letterSpacing="0.25"
-        android:text="@string/match_confirmation_screen_header_text"
-        android:textAllCaps="true"
-        android:textColor="@color/match_confirmation_screen_header_text_color"
-        android:textSize="@dimen/match_confirmation_screen_header_text_size"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topGuideline" />
+            android:id="@+id/tvHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans_bold"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.25"
+            android:text="@string/match_confirmation_screen_header_text"
+            android:textAllCaps="true"
+            android:textColor="@color/match_confirmation_screen_header_text_color"
+            android:textSize="@dimen/match_confirmation_screen_header_text_size"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/topGuideline"/>
 
     <com.zuluft.lib.ExplosionView
-        android:id="@+id/explosionView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+            android:id="@+id/explosionView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:minScale="0.5"
+            app:maxScale="2"
+            app:minAlpha="0.2"
+            app:maxAlpha="1"
+            app:moveFactor="1"
+            app:itemSize="50dp"
+            app:animDuration="3000"
+            app:spreadDirection="BOTTOM"
+            app:shardItemsCount="100"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

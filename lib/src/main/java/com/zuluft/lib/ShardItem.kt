@@ -23,5 +23,9 @@ internal interface ShardItem {
 
     fun getScale(): Float
 
+    fun getHeight(): Int
+
+    fun getWidth(): Int
+
     fun contains(x: Int, y: Int): Boolean
 }

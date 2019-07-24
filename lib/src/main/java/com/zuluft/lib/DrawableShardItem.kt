@@ -7,14 +7,22 @@ import android.graphics.drawable.BitmapDrawable
 
 internal class DrawableShardItem
 constructor(
-        val id: Int,
-        private val bitmapDrawable: BitmapDrawable
+    val id: Int,
+    private val bitmapDrawable: BitmapDrawable
 ) : ShardItem {
+    private val originalBounds: Rect = bitmapDrawable.bounds
+
+    override fun getWidth(): Int {
+        return bitmapDrawable.bounds.width()
+    }
+
+    override fun getHeight(): Int {
+        return bitmapDrawable.bounds.height()
+    }
+
     override fun contains(x: Int, y: Int): Boolean {
         return bitmapDrawable.bounds.contains(x, y)
     }
-
-    private val originalBounds: Rect = bitmapDrawable.bounds
 
     override fun getX(): Int {
         return bitmapDrawable.bounds.left
