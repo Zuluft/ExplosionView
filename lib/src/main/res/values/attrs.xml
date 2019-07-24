@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ExplosionView">
-        <attr name="itemSize" format="dimension"/>
-        <attr name="shardItemsCount" format="integer"/>
-        <attr name="shardDrawable" format="integer"/>
-        <attr name="moveFactor" format="float"/>
-        <attr name="animDuration" format="integer"/>
+        <attr name="itemWidth" format="dimension"/>
+        <attr name="itemHeight" format="dimension"/>
+        <attr name="ItemsCount" format="integer"/>
+        <attr name="drawable" format="integer"/>
+        <attr name="minMoveFactor" format="float"/>
+        <attr name="maxMoveFactor" format="float"/>
+        <attr name="minAnimDuration" format="integer"/>
+        <attr name="maxAnimDuration" format="integer"/>
+        <attr name="minAnimDelay" format="integer"/>
+        <attr name="maxAnimDelay" format="integer"/>
         <attr name="minScale" format="float"/>
         <attr name="maxScale" format="float"/>
         <attr name="minAlpha" format="float"/>
@@ -17,14 +22,18 @@
         </attr>
     </declare-styleable>
 
-    <dimen name="defaultItemSize">20dp</dimen>
-    <integer name="defaultShardItemsCount">100</integer>
-    <item name="defaultMoveFactor" format="float" type="dimen">0.5</item>
-    <integer name="defaultAnimDuration">10000</integer>
+    <dimen name="defaultItemWidth">40dp</dimen>
+    <integer name="defaultItemsCount">100</integer>
+    <integer name="defaultMinAnimDuration">1000</integer>
+    <integer name="defaultMaxAnimDuration">10000</integer>
+    <integer name="defaultMinAnimDelay">1000</integer>
+    <integer name="defaultMaxAnimDelay">10000</integer>
     <item name="defaultMinScale" format="float" type="dimen">0.7</item>
     <item name="defaultMaxScale" format="float" type="dimen">1.1</item>
     <item name="defaultMinAlpha" format="float" type="dimen">0.5</item>
     <item name="defaultMaxAlpha" format="float" type="dimen">1</item>
+    <item name="defaultMinMoveFactor" format="float" type="dimen">0.7</item>
+    <item name="defaultMaxMoveFactor" format="float" type="dimen">0.8</item>
     <dimen name="defaultHorizontalOffset">1dp</dimen>
     <integer name="defaultSpreadDirection">0</integer>
 </resources>

@@ -13,6 +13,10 @@ internal interface ShardItem {
 
     fun setScale(scale: Float)
 
+    fun setWidth(width:Int)
+
+    fun setHeight(height:Int)
+
     fun draw(canvas: Canvas)
 
     fun getX(): Int
@@ -26,6 +30,14 @@ internal interface ShardItem {
     fun getHeight(): Int
 
     fun getWidth(): Int
+
+    fun getScaledHeight():Int
+
+    fun getScaledWidth():Int
+
+    fun getSpeed():Long
+
+    fun getStartDelay():Long
 
     fun contains(x: Int, y: Int): Boolean
 }

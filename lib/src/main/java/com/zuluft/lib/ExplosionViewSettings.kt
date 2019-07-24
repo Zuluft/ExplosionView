@@ -1,31 +1,37 @@
 package com.zuluft.lib
 
 import android.content.Context
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import androidx.core.content.ContextCompat
+import java.security.InvalidParameterException
 
 class ExplosionViewSettings private constructor(builder: Builder) {
 
     val context: Context
-    val itemSize: Int
+    val itemWidth: Int
+    val itemHeight: Int
     val itemCount: Int
-    val animDuration: Long
+    val minAnimDuration: Long
+    val maxAnimDuration: Long
+    val minAnimDelay: Long
+    val maxAnimDelay: Long
     val minScale: Float
     val maxScale: Float
     val minAlpha: Float
     val maxAlpha: Float
-    val moveFactor: Float
+    val minMoveFactor: Float
+    val maxMoveFactor: Float
     val horizontalOffset: Int
     val spreadDirection: SpreadDirection
-    val drawable: BitmapDrawable
+    val drawable: Drawable
 
     companion object {
         fun builder(context: Context): Builder {
             return Builder(context)
         }
+
         fun builder(context: Context, attrs: AttributeSet?): Builder {
             return Builder(context, attrs)
         }
@@ -33,36 +39,72 @@ class ExplosionViewSettings private constructor(builder: Builder) {
 
     init {
         context = builder.context
-        itemSize = builder.itemSize
+        drawable = builder.drawable
+
+        var height = builder.itemHeight
+        var width = builder.itemWidth
+
+        if (height < 0 || width < 0) {
+            throw InvalidParameterException("Item size may not be negative")
+        } else if (height == 0 && width == 0) {
+            width = context.resources.getDimensionPixelSize(R.dimen.defaultItemWidth)
+        }
+        val ratio = drawable.intrinsicWidth.toFloat() / drawable.intrinsicHeight.toFloat()
+        if (height == 0 && width != 0) {
+            height = (width / ratio).toInt()
+        }
+        if (height != 0 && width == 0) {
+            width = (ratio * height).toInt()
+        }
+        itemHeight = height
+        itemWidth = width
         itemCount = builder.itemCount
-        animDuration = builder.animDuration
+        minAnimDuration = builder.minAnimDuration
+        maxAnimDuration = builder.maxAnimDuration
+        minAnimDelay = builder.minAnimDelay
+        maxAnimDelay = builder.maxAnimDelay
         minScale = builder.minScale
         maxScale = builder.maxScale
         minAlpha = builder.minAlpha
         maxAlpha = builder.maxAlpha
-        moveFactor = builder.moveFactor
+        minMoveFactor = builder.minMoveFactor
+        maxMoveFactor = builder.maxMoveFactor
         horizontalOffset = builder.horizontalOffset
         spreadDirection = builder.spreadDirection
-        drawable = builder.drawable
+        if (minAnimDuration > maxAnimDuration) {
+            throw InvalidParameterException("minAnimDuration should be less then maxAnimDuration")
+        }
+        if (minAnimDelay > maxAnimDelay) {
+            throw InvalidParameterException("minAnimDelay should be less then maxAnimDelay")
+        }
         if (minScale > maxScale) {
-            throw IllegalStateException("minScale should be less then maxScale")
+            throw InvalidParameterException("minScale should be less then maxScale")
         }
         if (minAlpha > maxAlpha) {
-            throw IllegalStateException("minAlpha should be less then maxAlpha")
+            throw InvalidParameterException("minAlpha should be less then maxAlpha")
         }
-        if (moveFactor <= 0f) {
-            throw IllegalStateException("moveFactor should be positive float")
+        if (minMoveFactor > maxMoveFactor || minMoveFactor < 0 || maxMoveFactor < 0) {
+            throw InvalidParameterException("moveFactor should be positive number " +
+                    "and minMoveFactor should be less then maxMoveFactor")
         }
     }
 
 
     class Builder {
         val context: Context
-        var itemSize: Int
+        var itemWidth: Int
+            private set
+        var itemHeight: Int
             private set
         var itemCount: Int
             private set
-        var animDuration: Long
+        var minAnimDuration: Long
+            private set
+        var maxAnimDuration: Long
+            private set
+        var minAnimDelay: Long
+            private set
+        var maxAnimDelay: Long
             private set
         var minScale: Float
             private set
@@ -72,13 +114,15 @@ class ExplosionViewSettings private constructor(builder: Builder) {
             private set
         var maxAlpha: Float
             private set
-        var moveFactor: Float
+        var minMoveFactor: Float
+            private set
+        var maxMoveFactor: Float
             private set
         var horizontalOffset: Int
             private set
         var spreadDirection: SpreadDirection
             private set
-        var drawable: BitmapDrawable
+        var drawable: Drawable
             private set
 
         constructor(context: Context) : this(context, null)
@@ -87,11 +131,15 @@ class ExplosionViewSettings private constructor(builder: Builder) {
             this.context = context
             val resources = context.resources
             val typedValue = TypedValue()
-            val defaultItemSize = resources.getDimensionPixelSize(R.dimen.defaultItemSize)
-            val defaultShardItemsCount = resources.getInteger(R.integer.defaultShardItemsCount)
-            resources.getValue(R.dimen.defaultMoveFactor, typedValue, true)
-            val defaultMoveFactor = typedValue.float
-            val defaultAnimDuration = resources.getInteger(R.integer.defaultAnimDuration)
+            val defaultItemsCount = resources.getInteger(R.integer.defaultItemsCount)
+            resources.getValue(R.dimen.defaultMinMoveFactor, typedValue, true)
+            val defaultMinMoveFactor = typedValue.float
+            resources.getValue(R.dimen.defaultMaxMoveFactor, typedValue, true)
+            val defaultMaxMoveFactor = typedValue.float
+            val defaultMinAnimDuration = resources.getInteger(R.integer.defaultMinAnimDuration)
+            val defaultMaxAnimDuration = resources.getInteger(R.integer.defaultMaxAnimDuration)
+            val defaultMinAnimDelay = resources.getInteger(R.integer.defaultMinAnimDelay)
+            val defaultMaxAnimDelay = resources.getInteger(R.integer.defaultMaxAnimDelay)
             resources.getValue(R.dimen.defaultMinScale, typedValue, true)
             val defaultMinScale = typedValue.float
             resources.getValue(R.dimen.defaultMaxScale, typedValue, true)
@@ -105,18 +153,35 @@ class ExplosionViewSettings private constructor(builder: Builder) {
             val defaultSpreadDirection = resources
                 .getInteger(R.integer.defaultSpreadDirection)
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ExplosionView)
-            itemSize = typedArray.getDimensionPixelSize(
-                R.styleable.ExplosionView_itemSize,
-                defaultItemSize
+            itemWidth = typedArray.getDimensionPixelSize(
+                R.styleable.ExplosionView_itemWidth,
+                0
+            )
+            itemHeight = typedArray.getDimensionPixelSize(
+                R.styleable.ExplosionView_itemWidth,
+                0
             )
             itemCount = typedArray.getInteger(
-                R.styleable.ExplosionView_shardItemsCount,
-                defaultShardItemsCount
+                R.styleable.ExplosionView_ItemsCount,
+                defaultItemsCount
             )
-            moveFactor = typedArray.getFloat(R.styleable.ExplosionView_moveFactor, defaultMoveFactor)
-            animDuration = typedArray.getInt(
-                R.styleable.ExplosionView_animDuration,
-                defaultAnimDuration
+            minMoveFactor = typedArray.getFloat(R.styleable.ExplosionView_minMoveFactor, defaultMinMoveFactor)
+            maxMoveFactor = typedArray.getFloat(R.styleable.ExplosionView_maxMoveFactor, defaultMaxMoveFactor)
+            minAnimDuration = typedArray.getInt(
+                R.styleable.ExplosionView_minAnimDuration,
+                defaultMinAnimDuration
+            ).toLong()
+            maxAnimDuration = typedArray.getInt(
+                R.styleable.ExplosionView_maxAnimDuration,
+                defaultMaxAnimDuration
+            ).toLong()
+            minAnimDelay = typedArray.getInt(
+                R.styleable.ExplosionView_minAnimDelay,
+                defaultMinAnimDelay
+            ).toLong()
+            maxAnimDelay = typedArray.getInt(
+                R.styleable.ExplosionView_maxAnimDelay,
+                defaultMaxAnimDelay
             ).toLong()
             minScale = typedArray.getFloat(R.styleable.ExplosionView_minScale, defaultMinScale)
             maxScale = typedArray.getFloat(R.styleable.ExplosionView_maxScale, defaultMaxScale)
@@ -136,24 +201,40 @@ class ExplosionViewSettings private constructor(builder: Builder) {
                     defaultSpreadDirection
                 }
             )
-            drawable = (if (typedArray.hasValue(R.styleable.ExplosionView_shardDrawable)) {
-                typedArray.getDrawable(R.styleable.ExplosionView_shardDrawable)
+            drawable = (if (typedArray.hasValue(R.styleable.ExplosionView_drawable)) {
+                typedArray.getDrawable(R.styleable.ExplosionView_drawable)
             } else {
                 ContextCompat.getDrawable(context, R.drawable.default_shard_drawable)
-            }) as? BitmapDrawable?: throw IllegalStateException("ShardDrawable should be BitmapDrawable")
+            })!!
             typedArray.recycle()
         }
 
-        fun itemSize(itemSize: Int) = apply {
-            this.itemSize = itemSize
+        fun itemWidth(itemWidth: Int) = apply {
+            this.itemWidth = itemWidth
+        }
+
+        fun itemHeight(itemHeight: Int) = apply {
+            this.itemHeight = itemHeight
         }
 
         fun itemCount(itemCount: Int) = apply {
             this.itemCount = itemCount
         }
 
-        fun animDuration(animDuration: Long) = apply {
-            this.animDuration = animDuration
+        fun minAnimDuration(minAnimDuration: Long) = apply {
+            this.minAnimDuration = minAnimDuration
+        }
+
+        fun maxAnimDuration(maxAnimDuration: Long) = apply {
+            this.maxAnimDuration = maxAnimDuration
+        }
+
+        fun minAnimDelay(minAnimDelay: Long) = apply {
+            this.minAnimDelay = minAnimDelay
+        }
+
+        fun maxAnimDelay(maxAnimDelay: Long) = apply {
+            this.maxAnimDelay = maxAnimDelay
         }
 
         fun minScale(minScale: Float) = apply {
@@ -172,8 +253,12 @@ class ExplosionViewSettings private constructor(builder: Builder) {
             this.maxAlpha = maxAlpha
         }
 
-        fun moveFactor(moveFactor: Float) = apply {
-            this.moveFactor = moveFactor
+        fun minMoveFactor(minMoveFactor: Float) = apply {
+            this.minMoveFactor = minMoveFactor
+        }
+
+        fun maxMoveFactor(maxMoveFactor: Float) = apply {
+            this.maxMoveFactor = maxMoveFactor
         }
 
         fun horizontalOffset(horizontalOffset: Int) = apply {
@@ -184,7 +269,7 @@ class ExplosionViewSettings private constructor(builder: Builder) {
             this.spreadDirection = spreadDirection
         }
 
-        fun drawable(drawable: BitmapDrawable) = apply {
+        fun drawable(drawable: Drawable) = apply {
             this.drawable = drawable
         }
 

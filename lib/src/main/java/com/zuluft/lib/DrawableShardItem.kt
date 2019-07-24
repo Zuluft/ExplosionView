@@ -2,77 +2,121 @@ package com.zuluft.lib
 
 import android.graphics.Canvas
 import android.graphics.Rect
-import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 
 
 internal class DrawableShardItem
 constructor(
     val id: Int,
-    private val bitmapDrawable: BitmapDrawable
+    private val drawable: Drawable,
+    private val initialWidth: Int,
+    private val initialHeight: Int,
+    initialX: Int,
+    initialY: Int,
+    initialAlpha: Float,
+    initialScale: Float,
+    private val startDelay: Long,
+    private val speed: Long
 ) : ShardItem {
-    private val originalBounds: Rect = bitmapDrawable.bounds
+
+    init {
+        setX(initialX)
+        setY(initialY)
+        setWidth(initialWidth)
+        setHeight(initialHeight)
+        setAlpha(initialAlpha)
+        setScale(initialScale)
+    }
+
+    override fun setHeight(height: Int) {
+        val bounds = getBounds()
+        drawable.setBounds(bounds.left, bounds.top, bounds.right, bounds.top + height)
+    }
+
+    override fun setWidth(width: Int) {
+        val bounds = getBounds()
+        drawable.setBounds(bounds.left, bounds.top, bounds.left + width, bounds.bottom)
+    }
+
+    private fun getBounds(): Rect {
+        return drawable.bounds
+    }
+
+    override fun getScaledHeight(): Int {
+        return getBounds().height()
+    }
+
+    override fun getScaledWidth(): Int {
+        return getBounds().width()
+    }
+
+    override fun getSpeed(): Long {
+        return speed
+    }
+
+    override fun getStartDelay(): Long {
+        return startDelay
+    }
 
     override fun getWidth(): Int {
-        return bitmapDrawable.bounds.width()
+        return initialWidth
     }
 
     override fun getHeight(): Int {
-        return bitmapDrawable.bounds.height()
+        return initialHeight
     }
 
     override fun contains(x: Int, y: Int): Boolean {
-        return bitmapDrawable.bounds.contains(x, y)
+        return getBounds().contains(x, y)
     }
 
     override fun getX(): Int {
-        return bitmapDrawable.bounds.left
+        return getBounds().left
     }
 
     override fun getY(): Int {
-        return bitmapDrawable.bounds.top
+        return getBounds().top
     }
 
     override fun getAlpha(): Float {
-        return bitmapDrawable.alpha / 255f
+        return drawable.alpha / 255f
     }
 
     override fun getScale(): Float {
-        return bitmapDrawable.bounds.width() / originalBounds.width().toFloat()
+        return getBounds().width() / initialWidth.toFloat()
     }
 
     override fun setX(x: Int) {
-        val bounds = bitmapDrawable.bounds
-        val width = bounds.width()
-        val height = bounds.height()
-        bitmapDrawable.setBounds(x, bounds.top, x + width, bounds.top + height)
+        val width = getBounds().width()
+        val height = getBounds().height()
+        drawable.setBounds(x, getBounds().top, x + width, getBounds().top + height)
     }
 
     override fun setY(y: Int) {
-        val bounds = bitmapDrawable.bounds
-        val width = bounds.width()
-        val height = bounds.height()
-        bitmapDrawable.setBounds(bounds.left, y, bounds.left + width, y + height)
+        val width = getBounds().width()
+        val height = getBounds().height()
+        drawable.setBounds(getBounds().left, y, getBounds().left + width, y + height)
     }
 
 
     override fun setScale(scale: Float) {
-        val bounds = bitmapDrawable.bounds
+        val bounds = getBounds()
         val width = bounds.width()
         val height = bounds.height()
         val targetWidth = (width * scale).toInt()
         val targetHeight = (height * scale).toInt()
         val x = (bounds.left - (targetWidth - width) / 2f).toInt()
         val y = (bounds.top - (targetHeight - height) / 2f).toInt()
-        bitmapDrawable.setBounds(x, y, x + targetWidth, y + targetHeight)
+        drawable.setBounds(x, y, x + targetWidth, y + targetHeight)
     }
 
 
     override fun setAlpha(alpha: Float) {
-        bitmapDrawable.alpha = (255 * alpha).toInt()
+        drawable.alpha = (255 * alpha).toInt()
     }
 
     override fun draw(canvas: Canvas) {
-        bitmapDrawable.draw(canvas)
+        drawable.draw(canvas)
     }
 
     companion object {

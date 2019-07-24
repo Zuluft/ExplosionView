@@ -30,16 +30,7 @@
     <com.zuluft.lib.ExplosionView
             android:id="@+id/explosionView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:minScale="0.5"
-            app:maxScale="2"
-            app:minAlpha="0.2"
-            app:maxAlpha="1"
-            app:moveFactor="1"
-            app:itemSize="50dp"
-            app:animDuration="3000"
-            app:spreadDirection="BOTTOM"
-            app:shardItemsCount="100"/>
+            android:layout_height="match_parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

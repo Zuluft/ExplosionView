@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.graphics.Canvas
 import android.graphics.Path
-import android.graphics.drawable.BitmapDrawable
 import android.util.SparseArray
 import android.view.View
 import android.view.animation.AccelerateInterpolator
@@ -28,38 +27,33 @@ constructor(
     private val random = Random()
 
     init {
-        for (i in 0 until explosionViewSettings.itemCount) {
-            val shardItem = createBitmapShardItem(i)
+        for (id in 0 until explosionViewSettings.itemCount) {
+            val shardItem = createShardItem(id)
             drawableShardItems.add(shardItem)
-            animators.put(
-                i, createShardItemAnimator(
-                    shardItem,
-                    getRandomNumberInRange(
-                        0f,
-                        explosionViewSettings.animDuration.toFloat()
-                    ).toLong()
-                )
-            )
+            animators.put(id, createShardItemAnimator(shardItem))
         }
-
     }
 
     fun isAnimRunning(): Boolean {
-        return false
+        val runningAnimatorsCount = animators.valueIterator().asSequence().count {
+            it.isRunning
+        } + tmpAnimators.valueIterator().asSequence().count {
+            it.isRunning
+        }
+        return runningAnimatorsCount != 0
     }
 
     private fun createShardItemAnimator(
-        drawableShardItem: DrawableShardItem,
-        delayMillis: Long
+        drawableShardItem: DrawableShardItem
     ): ObjectAnimator {
 
         val path = createItemPath(drawableShardItem)
         val animator = ObjectAnimator
             .ofInt(drawableShardItem, DrawableShardItem.X, DrawableShardItem.Y, path)
             .apply {
-                duration = explosionViewSettings.animDuration
+                duration = drawableShardItem.getSpeed()
                 interpolator = LinearInterpolator()
-                startDelay = delayMillis
+                startDelay = drawableShardItem.getStartDelay()
                 repeatMode = ObjectAnimator.RESTART
                 repeatCount = ObjectAnimator.INFINITE
             }
@@ -70,16 +64,25 @@ constructor(
     }
 
 
+    private fun getRandomMoveFactor(): Float {
+        return getRandomNumberInRange(
+            explosionViewSettings.minMoveFactor,
+            explosionViewSettings.maxMoveFactor
+        )
+    }
+
+
     private fun createItemPath(drawableShardItem: DrawableShardItem): Path {
         return Path().apply {
             var startY = drawableShardItem.getY()
             var startX = drawableShardItem.getX()
             moveTo(startX.toFloat(), startY.toFloat())
             while (isInBounds(startY, drawableShardItem.getHeight())) {
-                val x2 = getRandomX()
-                val y2 = startY + getMoveDistance() / 2
-                val x3 = getRandomX()
-                val y3 = startY + getMoveDistance()
+                val moveDistance=getMoveDistance()
+                val x2 = getRandomX(drawableShardItem.getScaledWidth())
+                val y2 = startY + moveDistance / 2
+                val x3 = getRandomX(drawableShardItem.getScaledWidth())
+                val y3 = startY + moveDistance
                 cubicTo(
                     startX.toFloat(),
                     startY.toFloat(),
@@ -102,42 +105,50 @@ constructor(
     }
 
     private fun getMoveDistance(): Int {
-        return (height * explosionViewSettings.moveFactor *
+        return (height * getRandomMoveFactor() *
                 when (explosionViewSettings.spreadDirection) {
                     Top -> -1
                     else -> 1
                 }).toInt()
     }
 
-    private fun createBitmapShardItem(id: Int): DrawableShardItem {
+    private fun createShardItem(id: Int): DrawableShardItem {
+        val scale = getRandomScale()
+        val targetWidth = explosionViewSettings.itemWidth * scale
+        val targetHeight = explosionViewSettings.itemHeight * scale
         return DrawableShardItem(
             id,
-            BitmapDrawable(
-                explosionViewSettings.context.resources,
-                explosionViewSettings.drawable.bitmap
-            )
-                .apply {
-                    val x = getRandomX()
-                    val y = getInitialY()
-                    setBounds(
-                        x,
-                        y,
-                        x + explosionViewSettings.itemSize,
-                        y + explosionViewSettings.itemSize
-                    )
-                })
-            .apply {
-                setScale(getRandomScale())
-                setX(getRandomX())
-                setY(getInitialY())
-                setAlpha(getRandomAlpha())
-            }
+            explosionViewSettings.drawable.constantState!!
+                .newDrawable(explosionViewSettings.context.resources),
+            explosionViewSettings.itemWidth,
+            explosionViewSettings.itemHeight,
+            getRandomX(targetWidth.toInt()),
+            getInitialY(targetHeight.toInt()),
+            getRandomAlpha(),
+            scale,
+            getRandomStartDelay(),
+            getRandomAnimDuration()
+        )
     }
 
-    private fun getInitialY(): Int {
+    private fun getRandomAnimDuration(): Long {
+        return getRandomNumberInRange(
+            explosionViewSettings.minAnimDuration.toFloat(),
+            explosionViewSettings.maxAnimDuration.toFloat()
+        ).toLong()
+    }
+
+    private fun getRandomStartDelay(): Long {
+        return getRandomNumberInRange(
+            explosionViewSettings.minAnimDelay.toFloat(),
+            explosionViewSettings.maxAnimDelay.toFloat()
+        ).toLong()
+    }
+
+    private fun getInitialY(itemHeight: Int): Int {
         return when (explosionViewSettings.spreadDirection) {
-            Top -> height + explosionViewSettings.itemSize
-            else -> -explosionViewSettings.itemSize
+            Top -> height
+            else -> -itemHeight
         }
     }
 
@@ -155,12 +166,11 @@ constructor(
         )
     }
 
-    private fun getRandomX(): Int {
+    private fun getRandomX(itemWidth: Int): Int {
         return getRandomNumberInRange(
-            0f,
-            width.toFloat()
-        )
-            .toInt()
+            explosionViewSettings.horizontalOffset.toFloat(),
+            (width - explosionViewSettings.horizontalOffset - itemWidth).toFloat()
+        ).toInt()
     }
 
 
@@ -193,7 +203,7 @@ constructor(
         val animator = ObjectAnimator
             .ofInt(shardItem, DrawableShardItem.X, DrawableShardItem.Y, path)
             .apply {
-                duration = explosionViewSettings.animDuration / 2
+                duration = shardItem.getSpeed() // todo compute distance percentage
                 interpolator = AccelerateInterpolator()
             }
         animator.addUpdateListener {
