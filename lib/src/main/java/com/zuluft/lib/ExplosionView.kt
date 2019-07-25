@@ -1,5 +1,6 @@
 package com.zuluft.lib
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.os.Parcel
@@ -12,8 +13,8 @@ import java.lang.ref.WeakReference
 
 
 class ExplosionView :
-        View,
-        ViewTreeObserver.OnPreDrawListener {
+    View,
+    ViewTreeObserver.OnPreDrawListener {
 
 
     private var explosionViewSettings: ExplosionViewSettings
@@ -39,18 +40,19 @@ class ExplosionView :
     }
 
 
-
-    //todo call performClick
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        when {
+        return when {
             event.action == MotionEvent.ACTION_DOWN -> {
                 selectedShardItem =
-                        drawableShardItemsHolder!!
-                                .findShardItemByLocation(event.x.toInt(), event.y.toInt())
+                    drawableShardItemsHolder!!
+                        .findShardItemByLocation(event.x.toInt(), event.y.toInt())
                 if (selectedShardItem != null) {
                     drawableShardItemsHolder?.detachAnim(selectedShardItem!!)
+                    true
+                } else {
+                    super.onTouchEvent(event)
                 }
-                return true
             }
             event.action == MotionEvent.ACTION_MOVE -> {
                 if (selectedShardItem != null) {
@@ -58,29 +60,32 @@ class ExplosionView :
                     selectedShardItem?.setY(event.y.toInt())
                     invalidate()
                     return true
+                } else {
+                    super.onTouchEvent(event)
                 }
-                return false
             }
             event.action == MotionEvent.ACTION_UP -> {
                 if (selectedShardItem != null) {
                     drawableShardItemsHolder?.attachAnim(selectedShardItem!!)
                     selectedShardItem = null
-                    return true
+                    true
+                } else {
+                    super.onTouchEvent(event)
                 }
-                return false
             }
+            else ->
+                super.onTouchEvent(event)
         }
-        return super.onTouchEvent(event)
     }
 
     override fun onPreDraw(): Boolean {
         drawableShardItemsHolder =
-                DrawableShardItemsHolder(
-                        width,
-                        height,
-                        explosionViewSettings,
-                        WeakReference(this)
-                )
+            DrawableShardItemsHolder(
+                width,
+                height,
+                explosionViewSettings,
+                WeakReference(this)
+            )
         if (shouldStartAnim) {
             drawableShardItemsHolder!!.startAnim()
         }

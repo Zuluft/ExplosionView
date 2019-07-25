@@ -26,6 +26,7 @@ class ExplosionViewSettings private constructor(builder: Builder) {
     val horizontalOffset: Int
     val spreadDirection: SpreadDirection
     val drawable: Drawable
+    val spreadMode: SpreadMode
 
     companion object {
         fun builder(context: Context): Builder {
@@ -71,6 +72,7 @@ class ExplosionViewSettings private constructor(builder: Builder) {
         maxMoveFactor = builder.maxMoveFactor
         horizontalOffset = builder.horizontalOffset
         spreadDirection = builder.spreadDirection
+        spreadMode = builder.spreadMode
         if (minAnimDuration > maxAnimDuration) {
             throw InvalidParameterException("minAnimDuration should be less then maxAnimDuration")
         }
@@ -84,8 +86,10 @@ class ExplosionViewSettings private constructor(builder: Builder) {
             throw InvalidParameterException("minAlpha should be less then maxAlpha")
         }
         if (minMoveFactor > maxMoveFactor || minMoveFactor < 0 || maxMoveFactor < 0) {
-            throw InvalidParameterException("moveFactor should be positive number " +
-                    "and minMoveFactor should be less then maxMoveFactor")
+            throw InvalidParameterException(
+                "moveFactor should be positive number " +
+                        "and minMoveFactor should be less then maxMoveFactor"
+            )
         }
     }
 
@@ -124,6 +128,8 @@ class ExplosionViewSettings private constructor(builder: Builder) {
             private set
         var drawable: Drawable
             private set
+        var spreadMode: SpreadMode
+            private set
 
         constructor(context: Context) : this(context, null)
 
@@ -152,6 +158,7 @@ class ExplosionViewSettings private constructor(builder: Builder) {
                 .getDimensionPixelSize(R.dimen.defaultHorizontalOffset)
             val defaultSpreadDirection = resources
                 .getInteger(R.integer.defaultSpreadDirection)
+            val defaultSpreadMode = resources.getInteger(R.integer.defaultSpreadMode)
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ExplosionView)
             itemWidth = typedArray.getDimensionPixelSize(
                 R.styleable.ExplosionView_itemWidth,
@@ -199,6 +206,16 @@ class ExplosionViewSettings private constructor(builder: Builder) {
                     )
                 } else {
                     defaultSpreadDirection
+                }
+            )
+            spreadMode = getSpreadMode(
+                if (typedArray.hasValue(R.styleable.ExplosionView_spreadMode)) {
+                    typedArray.getInt(
+                        R.styleable.ExplosionView_spreadMode,
+                        defaultSpreadMode
+                    )
+                } else {
+                    defaultSpreadMode
                 }
             )
             drawable = (if (typedArray.hasValue(R.styleable.ExplosionView_drawable)) {
@@ -267,6 +284,10 @@ class ExplosionViewSettings private constructor(builder: Builder) {
 
         fun spreadDirection(spreadDirection: SpreadDirection) = apply {
             this.spreadDirection = spreadDirection
+        }
+
+        fun spreadDirection(spreadMode: SpreadMode) = apply {
+            this.spreadMode = spreadMode
         }
 
         fun drawable(drawable: Drawable) = apply {

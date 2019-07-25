@@ -6,7 +6,6 @@ import android.graphics.Canvas
 import android.graphics.Path
 import android.util.SparseArray
 import android.view.View
-import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.core.util.valueIterator
 import java.lang.ref.WeakReference
@@ -54,7 +53,10 @@ constructor(
                 duration = drawableShardItem.getSpeed()
                 interpolator = LinearInterpolator()
                 startDelay = drawableShardItem.getStartDelay()
-                repeatMode = ObjectAnimator.RESTART
+                repeatMode = when (explosionViewSettings.spreadMode) {
+                    Unidirectional -> ObjectAnimator.RESTART
+                    Bidirectional -> ObjectAnimator.REVERSE
+                }
                 repeatCount = ObjectAnimator.INFINITE
             }
         animator.addUpdateListener {
@@ -78,7 +80,7 @@ constructor(
             var startX = drawableShardItem.getX()
             moveTo(startX.toFloat(), startY.toFloat())
             while (isInBounds(startY, drawableShardItem.getHeight())) {
-                val moveDistance=getMoveDistance()
+                val moveDistance = getMoveDistance()
                 val x2 = getRandomX(drawableShardItem.getScaledWidth())
                 val y2 = startY + moveDistance / 2
                 val x3 = getRandomX(drawableShardItem.getScaledWidth())
@@ -115,7 +117,11 @@ constructor(
     private fun createShardItem(id: Int): DrawableShardItem {
         val scale = getRandomScale()
         val targetWidth = explosionViewSettings.itemWidth * scale
-        val targetHeight = explosionViewSettings.itemHeight * scale
+        val targetHeight = if (scale >= 1f)
+            explosionViewSettings.itemHeight * scale
+        else {
+            explosionViewSettings.itemHeight.toFloat()
+        }
         return DrawableShardItem(
             id,
             explosionViewSettings.drawable.constantState!!
@@ -188,6 +194,11 @@ constructor(
     fun endAnim() {
         animators.valueIterator().forEach {
             it.end()
+            it.cancel()
+        }
+        tmpAnimators.valueIterator().forEach {
+            it.end()
+            it.cancel()
         }
     }
 
@@ -198,13 +209,22 @@ constructor(
             })
     }
 
+    private fun getYDistancePercentage(yValue: Float): Float {
+        val percentage = yValue / height
+        return when (explosionViewSettings.spreadDirection) {
+            Top -> 1f - percentage
+            else -> percentage
+        }
+    }
+
     private fun createTemporaryAnimator(shardItem: DrawableShardItem): Animator {
         val path = createItemPath(shardItem)
         val animator = ObjectAnimator
             .ofInt(shardItem, DrawableShardItem.X, DrawableShardItem.Y, path)
             .apply {
-                duration = shardItem.getSpeed() // todo compute distance percentage
-                interpolator = AccelerateInterpolator()
+                duration = (shardItem.getSpeed() * (1f -
+                        getYDistancePercentage(shardItem.getY().toFloat()))).toLong()
+                interpolator = LinearInterpolator()
             }
         animator.addUpdateListener {
             view.get()?.invalidate()

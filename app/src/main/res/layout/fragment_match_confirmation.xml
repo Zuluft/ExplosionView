@@ -30,7 +30,9 @@
     <com.zuluft.lib.ExplosionView
             android:id="@+id/explosionView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            app:spreadDirection="BOTTOM"
+            app:spreadMode="UNIDIRECTIONAL"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

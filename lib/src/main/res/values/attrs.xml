@@ -20,6 +20,10 @@
             <enum name="TOP" value="0"/>
             <enum name="BOTTOM" value="1"/>
         </attr>
+        <attr name="spreadMode" format="enum">
+            <enum name="UNIDIRECTIONAL" value="0"/>
+            <enum name="BIDIRECTIONAL" value="1"/>
+        </attr>
     </declare-styleable>
 
     <dimen name="defaultItemWidth">40dp</dimen>
@@ -36,4 +40,5 @@
     <item name="defaultMaxMoveFactor" format="float" type="dimen">0.8</item>
     <dimen name="defaultHorizontalOffset">1dp</dimen>
     <integer name="defaultSpreadDirection">0</integer>
+    <integer name="defaultSpreadMode">0</integer>
 </resources>
