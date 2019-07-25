@@ -29,7 +29,15 @@ constructor(
         for (id in 0 until explosionViewSettings.itemCount) {
             val shardItem = createShardItem(id)
             drawableShardItems.add(shardItem)
-            animators.put(id, createShardItemAnimator(shardItem))
+            animators.put(
+                id, createShardItemAnimator(
+                    shardItem, if (isInBidirectionalMode() && shouldChangeDirectionInBidirectionalMode(id)) {
+                        getOppsiteSpreadDirection(explosionViewSettings.spreadDirection)
+                    } else {
+                        explosionViewSettings.spreadDirection
+                    }
+                )
+            )
         }
     }
 
@@ -43,20 +51,18 @@ constructor(
     }
 
     private fun createShardItemAnimator(
-        drawableShardItem: DrawableShardItem
+        drawableShardItem: DrawableShardItem,
+        spreadDirection: SpreadDirection
     ): ObjectAnimator {
 
-        val path = createItemPath(drawableShardItem)
+        val path = createItemPath(drawableShardItem, spreadDirection)
         val animator = ObjectAnimator
             .ofInt(drawableShardItem, DrawableShardItem.X, DrawableShardItem.Y, path)
             .apply {
                 duration = drawableShardItem.getSpeed()
                 interpolator = LinearInterpolator()
                 startDelay = drawableShardItem.getStartDelay()
-                repeatMode = when (explosionViewSettings.spreadMode) {
-                    Unidirectional -> ObjectAnimator.RESTART
-                    Bidirectional -> ObjectAnimator.REVERSE
-                }
+                repeatMode = ObjectAnimator.RESTART
                 repeatCount = ObjectAnimator.INFINITE
             }
         animator.addUpdateListener {
@@ -74,13 +80,13 @@ constructor(
     }
 
 
-    private fun createItemPath(drawableShardItem: DrawableShardItem): Path {
+    private fun createItemPath(drawableShardItem: DrawableShardItem, spreadDirection: SpreadDirection): Path {
         return Path().apply {
             var startY = drawableShardItem.getY()
             var startX = drawableShardItem.getX()
             moveTo(startX.toFloat(), startY.toFloat())
-            while (isInBounds(startY, drawableShardItem.getHeight())) {
-                val moveDistance = getMoveDistance()
+            while (isInBounds(startY, drawableShardItem.getHeight(), spreadDirection)) {
+                val moveDistance = getMoveDistance(spreadDirection)
                 val x2 = getRandomX(drawableShardItem.getScaledWidth())
                 val y2 = startY + moveDistance / 2
                 val x3 = getRandomX(drawableShardItem.getScaledWidth())
@@ -99,16 +105,16 @@ constructor(
         }
     }
 
-    private fun isInBounds(yValue: Int, itemHeight: Int): Boolean {
-        return when (explosionViewSettings.spreadDirection) {
+    private fun isInBounds(yValue: Int, itemHeight: Int, spreadDirection: SpreadDirection): Boolean {
+        return when (spreadDirection) {
             Top -> yValue >= -itemHeight
             else -> yValue <= height + itemHeight
         }
     }
 
-    private fun getMoveDistance(): Int {
+    private fun getMoveDistance(spreadDirection: SpreadDirection): Int {
         return (height * getRandomMoveFactor() *
-                when (explosionViewSettings.spreadDirection) {
+                when (spreadDirection) {
                     Top -> -1
                     else -> 1
                 }).toInt()
@@ -117,7 +123,7 @@ constructor(
     private fun createShardItem(id: Int): DrawableShardItem {
         val scale = getRandomScale()
         val targetWidth = explosionViewSettings.itemWidth * scale
-        val targetHeight = if (scale >= 1f)
+        val offsetHeight = if (scale >= 1f)
             explosionViewSettings.itemHeight * scale
         else {
             explosionViewSettings.itemHeight.toFloat()
@@ -129,7 +135,11 @@ constructor(
             explosionViewSettings.itemWidth,
             explosionViewSettings.itemHeight,
             getRandomX(targetWidth.toInt()),
-            getInitialY(targetHeight.toInt()),
+            getInitialY(offsetHeight.toInt(), if(isInBidirectionalMode() && shouldChangeDirectionInBidirectionalMode(id)){
+                getOppsiteSpreadDirection(explosionViewSettings.spreadDirection)
+            }else{
+                explosionViewSettings.spreadDirection
+            }),
             getRandomAlpha(),
             scale,
             getRandomStartDelay(),
@@ -151,8 +161,8 @@ constructor(
         ).toLong()
     }
 
-    private fun getInitialY(itemHeight: Int): Int {
-        return when (explosionViewSettings.spreadDirection) {
+    private fun getInitialY(itemHeight: Int, spreadDirection: SpreadDirection): Int {
+        return when (spreadDirection) {
             Top -> height
             else -> -itemHeight
         }
@@ -217,8 +227,23 @@ constructor(
         }
     }
 
+    private fun shouldChangeDirectionInBidirectionalMode(shardItemId: Int): Boolean {
+        return shardItemId % 2 == 0
+    }
+
+    private fun isInBidirectionalMode(): Boolean {
+        return explosionViewSettings.spreadMode == Bidirectional
+    }
+
     private fun createTemporaryAnimator(shardItem: DrawableShardItem): Animator {
-        val path = createItemPath(shardItem)
+        val path = createItemPath(
+            shardItem,
+            if (isInBidirectionalMode() && shouldChangeDirectionInBidirectionalMode(shardItem.id)) {
+                getOppsiteSpreadDirection(explosionViewSettings.spreadDirection)
+            } else {
+                explosionViewSettings.spreadDirection
+            }
+        )
         val animator = ObjectAnimator
             .ofInt(shardItem, DrawableShardItem.X, DrawableShardItem.Y, path)
             .apply {

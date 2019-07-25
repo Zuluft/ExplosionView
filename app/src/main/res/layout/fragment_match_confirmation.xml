@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:spreadDirection="BOTTOM"
-            app:spreadMode="UNIDIRECTIONAL"/>
+            app:spreadMode="BIDIRECTIONAL"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

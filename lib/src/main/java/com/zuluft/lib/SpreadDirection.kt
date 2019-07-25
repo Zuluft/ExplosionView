@@ -11,3 +11,10 @@ fun getSpreadDirection(id: Int): SpreadDirection {
         else -> Bottom
     }
 }
+
+fun getOppsiteSpreadDirection(spreadDirection: SpreadDirection): SpreadDirection {
+    return when (spreadDirection) {
+        Top -> Bottom
+        else -> Top
+    }
+}
