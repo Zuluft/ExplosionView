@@ -36,6 +36,9 @@ class ExplosionView :
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!explosionViewSettings.isDraggable) {
+            return super.onTouchEvent(event)
+        }
         return when {
             event.action == MotionEvent.ACTION_DOWN -> {
                 selectedShardItem =

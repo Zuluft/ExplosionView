@@ -27,6 +27,7 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
     val spreadDirection: SpreadDirection
     val drawable: Drawable
     val spreadMode: SpreadMode
+    val isDraggable: Boolean
 
     companion object {
         fun builder(context: Context): Builder {
@@ -77,6 +78,7 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
         horizontalOffset = builder.horizontalOffset
         spreadDirection = builder.spreadDirection
         spreadMode = builder.spreadMode
+        isDraggable = builder.isDraggable
         if (minAnimDuration > maxAnimDuration) {
             throw InvalidParameterException("minAnimDuration should be less then maxAnimDuration")
         }
@@ -134,6 +136,8 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
             private set
         var spreadMode: SpreadMode
             private set
+        var isDraggable: Boolean
+            private set
 
         constructor(context: Context) : this(context, null)
 
@@ -163,6 +167,7 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
             val defaultSpreadDirection = resources
                     .getInteger(R.integer.defaultSpreadDirection)
             val defaultSpreadMode = resources.getInteger(R.integer.defaultSpreadMode)
+            val defaultIsdraggable = resources.getBoolean(R.bool.defaultIsDraggable)
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ExplosionView)
             itemWidth = typedArray.getDimensionPixelSize(
                     R.styleable.ExplosionView_itemWidth,
@@ -222,6 +227,8 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
                         defaultSpreadMode
                     }
             )
+            isDraggable = typedArray.getBoolean(R.styleable.ExplosionView_isDraggable,
+                    defaultIsdraggable)
             drawable = (if (typedArray.hasValue(R.styleable.ExplosionView_drawable)) {
                 typedArray.getDrawable(R.styleable.ExplosionView_drawable)
             } else {
@@ -292,6 +299,10 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
 
         fun spreadMode(spreadMode: SpreadMode) = apply {
             this.spreadMode = spreadMode
+        }
+
+        fun isDraggable(isDraggable: Boolean) = apply {
+            this.isDraggable = isDraggable
         }
 
         fun drawable(drawable: Drawable) = apply {
