@@ -8,13 +8,11 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewTreeObserver
 import java.lang.ref.WeakReference
 
 
 class ExplosionView :
-    View,
-    ViewTreeObserver.OnPreDrawListener {
+        View {
 
 
     private var explosionViewSettings: ExplosionViewSettings
@@ -35,18 +33,14 @@ class ExplosionView :
         this.explosionViewSettings = ExplosionViewSettings.builder(context, attrs).build()
     }
 
-    init {
-        viewTreeObserver.addOnPreDrawListener(this)
-    }
-
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return when {
             event.action == MotionEvent.ACTION_DOWN -> {
                 selectedShardItem =
-                    drawableShardItemsHolder!!
-                        .findShardItemByLocation(event.x.toInt(), event.y.toInt())
+                        drawableShardItemsHolder!!
+                                .findShardItemByLocation(event.x.toInt(), event.y.toInt())
                 if (selectedShardItem != null) {
                     drawableShardItemsHolder?.detachAnim(selectedShardItem!!)
                     true
@@ -78,21 +72,25 @@ class ExplosionView :
         }
     }
 
-    override fun onPreDraw(): Boolean {
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        collapse()
+        setupDrawableShardItemsHolder(w, h)
+    }
+
+    fun setupDrawableShardItemsHolder(width: Int, height: Int) {
         drawableShardItemsHolder =
-            DrawableShardItemsHolder(
-                width,
-                height,
-                explosionViewSettings,
-                WeakReference(this)
-            )
+                DrawableShardItemsHolder(
+                        width,
+                        height,
+                        explosionViewSettings,
+                        WeakReference(this)
+                )
         if (shouldStartAnim) {
             drawableShardItemsHolder!!.startAnim()
         }
-        viewTreeObserver.removeOnPreDrawListener(this)
-        return false
     }
-
 
     fun explode() {
         if (drawableShardItemsHolder == null) {
@@ -106,6 +104,19 @@ class ExplosionView :
         if (drawableShardItemsHolder != null && drawableShardItemsHolder!!.isAnimRunning()) {
             drawableShardItemsHolder!!.endAnim()
             shouldStartAnim = false
+        }
+    }
+
+    fun getSettings(): ExplosionViewSettings {
+        return explosionViewSettings
+    }
+
+    fun changeSettings(explosionViewSettings: ExplosionViewSettings) {
+        collapse()
+        this.explosionViewSettings = explosionViewSettings
+        shouldStartAnim = drawableShardItemsHolder?.isAnimRunning() ?: false
+        if (width != 0 && height != 0) {
+            setupDrawableShardItemsHolder(width, height)
         }
     }
 
@@ -127,6 +138,9 @@ class ExplosionView :
         if (state is SavedState) {
             super.onRestoreInstanceState(state.superState)
             shouldStartAnim = state.isAnimRunning
+            if (shouldStartAnim) {
+                explode()
+            }
         } else {
             super.onRestoreInstanceState(state)
         }

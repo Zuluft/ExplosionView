@@ -4,4 +4,5 @@
     <dimen name="main_screen_toolbar_text_size">18sp</dimen>
     <dimen name="main_screen_toolbar_text_elevation">21dp</dimen>
     <dimen name="match_confirmation_screen_header_text_size">19sp</dimen>
+    <dimen name="match_confirmation_screen_subtitle_text_size">17sp</dimen>
 </resources>

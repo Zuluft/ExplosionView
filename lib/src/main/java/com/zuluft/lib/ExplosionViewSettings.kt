@@ -7,7 +7,7 @@ import android.util.TypedValue
 import androidx.core.content.ContextCompat
 import java.security.InvalidParameterException
 
-class ExplosionViewSettings private constructor(builder: Builder) {
+class ExplosionViewSettings private constructor(private val builder: Builder) {
 
     val context: Context
     val itemWidth: Int
@@ -36,6 +36,10 @@ class ExplosionViewSettings private constructor(builder: Builder) {
         fun builder(context: Context, attrs: AttributeSet?): Builder {
             return Builder(context, attrs)
         }
+    }
+
+    fun newBuilder(): Builder {
+        return builder
     }
 
     init {
@@ -87,8 +91,8 @@ class ExplosionViewSettings private constructor(builder: Builder) {
         }
         if (minMoveFactor > maxMoveFactor || minMoveFactor < 0 || maxMoveFactor < 0) {
             throw InvalidParameterException(
-                "moveFactor should be positive number " +
-                        "and minMoveFactor should be less then maxMoveFactor"
+                    "moveFactor should be positive number " +
+                            "and minMoveFactor should be less then maxMoveFactor"
             )
         }
     }
@@ -155,68 +159,68 @@ class ExplosionViewSettings private constructor(builder: Builder) {
             resources.getValue(R.dimen.defaultMaxAlpha, typedValue, true)
             val defaultMaxAlpha = typedValue.float
             val defaultHorizontalOffset = resources
-                .getDimensionPixelSize(R.dimen.defaultHorizontalOffset)
+                    .getDimensionPixelSize(R.dimen.defaultHorizontalOffset)
             val defaultSpreadDirection = resources
-                .getInteger(R.integer.defaultSpreadDirection)
+                    .getInteger(R.integer.defaultSpreadDirection)
             val defaultSpreadMode = resources.getInteger(R.integer.defaultSpreadMode)
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ExplosionView)
             itemWidth = typedArray.getDimensionPixelSize(
-                R.styleable.ExplosionView_itemWidth,
-                0
+                    R.styleable.ExplosionView_itemWidth,
+                    0
             )
             itemHeight = typedArray.getDimensionPixelSize(
-                R.styleable.ExplosionView_itemWidth,
-                0
+                    R.styleable.ExplosionView_itemWidth,
+                    0
             )
             itemCount = typedArray.getInteger(
-                R.styleable.ExplosionView_ItemsCount,
-                defaultItemsCount
+                    R.styleable.ExplosionView_ItemsCount,
+                    defaultItemsCount
             )
             minMoveFactor = typedArray.getFloat(R.styleable.ExplosionView_minMoveFactor, defaultMinMoveFactor)
             maxMoveFactor = typedArray.getFloat(R.styleable.ExplosionView_maxMoveFactor, defaultMaxMoveFactor)
             minAnimDuration = typedArray.getInt(
-                R.styleable.ExplosionView_minAnimDuration,
-                defaultMinAnimDuration
+                    R.styleable.ExplosionView_minAnimDuration,
+                    defaultMinAnimDuration
             ).toLong()
             maxAnimDuration = typedArray.getInt(
-                R.styleable.ExplosionView_maxAnimDuration,
-                defaultMaxAnimDuration
+                    R.styleable.ExplosionView_maxAnimDuration,
+                    defaultMaxAnimDuration
             ).toLong()
             minAnimDelay = typedArray.getInt(
-                R.styleable.ExplosionView_minAnimDelay,
-                defaultMinAnimDelay
+                    R.styleable.ExplosionView_minAnimDelay,
+                    defaultMinAnimDelay
             ).toLong()
             maxAnimDelay = typedArray.getInt(
-                R.styleable.ExplosionView_maxAnimDelay,
-                defaultMaxAnimDelay
+                    R.styleable.ExplosionView_maxAnimDelay,
+                    defaultMaxAnimDelay
             ).toLong()
             minScale = typedArray.getFloat(R.styleable.ExplosionView_minScale, defaultMinScale)
             maxScale = typedArray.getFloat(R.styleable.ExplosionView_maxScale, defaultMaxScale)
             minAlpha = typedArray.getFloat(R.styleable.ExplosionView_minAlpha, defaultMinAlpha)
             maxAlpha = typedArray.getFloat(R.styleable.ExplosionView_maxAlpha, defaultMaxAlpha)
             horizontalOffset = typedArray.getDimensionPixelSize(
-                R.styleable.ExplosionView_horizontalOffset,
-                defaultHorizontalOffset
+                    R.styleable.ExplosionView_horizontalOffset,
+                    defaultHorizontalOffset
             )
             spreadDirection = getSpreadDirection(
-                if (typedArray.hasValue(R.styleable.ExplosionView_spreadDirection)) {
-                    typedArray.getInt(
-                        R.styleable.ExplosionView_spreadDirection,
+                    if (typedArray.hasValue(R.styleable.ExplosionView_spreadDirection)) {
+                        typedArray.getInt(
+                                R.styleable.ExplosionView_spreadDirection,
+                                defaultSpreadDirection
+                        )
+                    } else {
                         defaultSpreadDirection
-                    )
-                } else {
-                    defaultSpreadDirection
-                }
+                    }
             )
             spreadMode = getSpreadMode(
-                if (typedArray.hasValue(R.styleable.ExplosionView_spreadMode)) {
-                    typedArray.getInt(
-                        R.styleable.ExplosionView_spreadMode,
+                    if (typedArray.hasValue(R.styleable.ExplosionView_spreadMode)) {
+                        typedArray.getInt(
+                                R.styleable.ExplosionView_spreadMode,
+                                defaultSpreadMode
+                        )
+                    } else {
                         defaultSpreadMode
-                    )
-                } else {
-                    defaultSpreadMode
-                }
+                    }
             )
             drawable = (if (typedArray.hasValue(R.styleable.ExplosionView_drawable)) {
                 typedArray.getDrawable(R.styleable.ExplosionView_drawable)
@@ -286,7 +290,7 @@ class ExplosionViewSettings private constructor(builder: Builder) {
             this.spreadDirection = spreadDirection
         }
 
-        fun spreadDirection(spreadMode: SpreadMode) = apply {
+        fun spreadMode(spreadMode: SpreadMode) = apply {
             this.spreadMode = spreadMode
         }
 

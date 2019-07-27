@@ -14,4 +14,5 @@
     </color>
     <color name="match_confirmation_screen_start_chat_btn_bg_color">@color/colorAccent</color>
     <color name="match_confirmation_screen_search_more_btn_bg_color">@color/colorPrimary</color>
+    <color name="match_confirmation_screen_subtitle_text_color">#FFFFFF</color>
 </resources>
