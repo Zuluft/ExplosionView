@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,7 +10,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.05" />
+        app:layout_constraintGuide_percent="0.03" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.97" />
 
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -50,10 +59,163 @@
         app:layout_constraintTop_toBottomOf="@id/headerBottomSpace" />
 
 
+    <View
+        android:id="@+id/vOuterCircle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/shape_match_confirmation_outer_circle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.98" />
+
+    <View
+        android:id="@+id/vInnerCircle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/shape_match_confirmation_inner_circle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.75" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivLightning"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/shape_match_confirmation_inner_circle"
+        android:padding="@dimen/match_confirmation_screen_lightning_item_padding"
+        android:src="@drawable/ic_lightning"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.14" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivUser1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/layers_match_confirmation_user_bg"
+        android:scaleType="centerCrop"
+        android:src="@drawable/pic_user1"
+        app:layout_constraintBottom_toBottomOf="@id/vOuterCircle"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@id/ivLightning"
+        app:layout_constraintStart_toStartOf="@id/vOuterCircle"
+        app:layout_constraintTop_toTopOf="@id/vOuterCircle"
+        app:layout_constraintWidth_percent="0.38" />
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivUser2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/layers_match_confirmation_user_bg"
+        android:scaleType="centerCrop"
+        android:src="@drawable/pic_user2"
+        app:layout_constraintBottom_toBottomOf="@id/vOuterCircle"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="@id/vOuterCircle"
+        app:layout_constraintStart_toEndOf="@id/ivLightning"
+        app:layout_constraintTop_toTopOf="@id/vOuterCircle"
+        app:layout_constraintWidth_percent="0.38" />
+
+    <Space
+        android:id="@+id/userImageBottomSpace"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.02"
+        app:layout_constraintTop_toBottomOf="@id/ivUser1" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvUser1Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans_bold"
+        android:includeFontPadding="false"
+        android:letterSpacing="0.25"
+        android:text="Johnny"
+        android:textAllCaps="true"
+        android:textColor="@color/match_confirmation_screen_user_name_text_color"
+        android:textSize="@dimen/match_confirmation_screen_user_name_text_size"
+        app:layout_constraintEnd_toEndOf="@id/ivUser1"
+        app:layout_constraintStart_toStartOf="@id/ivUser1"
+        app:layout_constraintTop_toBottomOf="@id/userImageBottomSpace"
+        tools:ignore="HardcodedText" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvUser2Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans_bold"
+        android:includeFontPadding="false"
+        android:letterSpacing="0.25"
+        android:text="Sasha"
+        android:textAllCaps="true"
+        android:textColor="@color/match_confirmation_screen_user_name_text_color"
+        android:textSize="@dimen/match_confirmation_screen_user_name_text_size"
+        app:layout_constraintEnd_toEndOf="@id/ivUser2"
+        app:layout_constraintStart_toStartOf="@id/ivUser2"
+        app:layout_constraintTop_toBottomOf="@id/userImageBottomSpace"
+        tools:ignore="HardcodedText" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnStartChat"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/shape_primary_btn_bg"
+        android:fontFamily="@font/open_sans_bold"
+        android:includeFontPadding="false"
+        android:letterSpacing="0.25"
+        android:text="@string/match_confirmation_screen_start_chat_btn_text"
+        android:textColor="@color/primary_btn_text_color"
+        android:textSize="@dimen/primary_btn_text_size"
+        app:layout_constraintBottom_toTopOf="@id/searchMoreTopSpace"
+        app:layout_constraintDimensionRatio="5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.6" />
+
+    <Space
+        android:id="@+id/searchMoreTopSpace"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/btnSearchMore"
+        app:layout_constraintHeight_percent="0.01" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnSearchMore"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/shape_secondary_btn_bg"
+        android:fontFamily="@font/open_sans_bold"
+        android:includeFontPadding="false"
+        android:letterSpacing="0.25"
+        android:text="@string/match_confirmation_screen_search_more_btn_text"
+        android:textColor="@color/primary_btn_text_color"
+        android:textSize="@dimen/primary_btn_text_size"
+        app:layout_constraintBottom_toTopOf="@id/bottomGuideline"
+        app:layout_constraintDimensionRatio="5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.6" />
+
+
     <com.zuluft.lib.ExplosionView
         android:id="@+id/explosionView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:ItemsCount="50"
+        android:elevation="@dimen/match_confirmation_screen_explosion_view_elevation"
         app:spreadMode="BIDIRECTIONAL" />
 
 

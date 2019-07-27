@@ -14,11 +14,13 @@ import kotlin.collections.ArrayList
 
 internal class DrawableShardItemsHolder
 constructor(
-    private val width: Int,
-    private val height: Int,
-    private val explosionViewSettings: ExplosionViewSettings,
-    private val view: WeakReference<View>
+        private val width: Int,
+        private val height: Int,
+        private val explosionViewSettings: ExplosionViewSettings,
+        private val view: WeakReference<View>
 ) {
+
+    private var isEnding = false
 
     private val drawableShardItems: ArrayList<DrawableShardItem> = ArrayList()
     private val animators: SparseArray<Animator> = SparseArray()
@@ -30,13 +32,14 @@ constructor(
             val shardItem = createShardItem(id)
             drawableShardItems.add(shardItem)
             animators.put(
-                id, createShardItemAnimator(
-                    shardItem, if (isInBidirectionalMode() && shouldChangeDirectionInBidirectionalMode(id)) {
-                        getOppsiteSpreadDirection(explosionViewSettings.spreadDirection)
-                    } else {
-                        explosionViewSettings.spreadDirection
-                    }
-                )
+                    id, createShardItemAnimator(
+                    shardItem, if (isInBidirectionalMode() &&
+                    shouldChangeDirectionInBidirectionalMode(id)) {
+                getOppositeSpreadDirection(explosionViewSettings.spreadDirection)
+            } else {
+                explosionViewSettings.spreadDirection
+            }
+            )
             )
         }
     }
@@ -50,21 +53,25 @@ constructor(
         return runningAnimatorsCount != 0
     }
 
+    fun endScene() {
+
+    }
+
     private fun createShardItemAnimator(
-        drawableShardItem: DrawableShardItem,
-        spreadDirection: SpreadDirection
+            drawableShardItem: DrawableShardItem,
+            spreadDirection: SpreadDirection
     ): ObjectAnimator {
 
         val path = createItemPath(drawableShardItem, spreadDirection)
         val animator = ObjectAnimator
-            .ofInt(drawableShardItem, DrawableShardItem.X, DrawableShardItem.Y, path)
-            .apply {
-                duration = drawableShardItem.getSpeed()
-                interpolator = LinearInterpolator()
-                startDelay = drawableShardItem.getStartDelay()
-                repeatMode = ObjectAnimator.RESTART
-                repeatCount = ObjectAnimator.INFINITE
-            }
+                .ofInt(drawableShardItem, DrawableShardItem.X, DrawableShardItem.Y, path)
+                .apply {
+                    duration = drawableShardItem.getSpeed()
+                    interpolator = LinearInterpolator()
+                    startDelay = drawableShardItem.getStartDelay()
+                    repeatMode = ObjectAnimator.RESTART
+                    repeatCount = ObjectAnimator.INFINITE
+                }
         animator.addUpdateListener {
             view.get()?.invalidate()
         }
@@ -74,13 +81,14 @@ constructor(
 
     private fun getRandomMoveFactor(): Float {
         return getRandomNumberInRange(
-            explosionViewSettings.minMoveFactor,
-            explosionViewSettings.maxMoveFactor
+                explosionViewSettings.minMoveFactor,
+                explosionViewSettings.maxMoveFactor
         )
     }
 
 
-    private fun createItemPath(drawableShardItem: DrawableShardItem, spreadDirection: SpreadDirection): Path {
+    private fun createItemPath(drawableShardItem: DrawableShardItem,
+                               spreadDirection: SpreadDirection): Path {
         return Path().apply {
             var startY = drawableShardItem.getY()
             var startX = drawableShardItem.getX()
@@ -92,12 +100,12 @@ constructor(
                 val x3 = getRandomX(drawableShardItem.getScaledWidth())
                 val y3 = startY + moveDistance
                 cubicTo(
-                    startX.toFloat(),
-                    startY.toFloat(),
-                    x2.toFloat(),
-                    y2.toFloat(),
-                    x3.toFloat(),
-                    y3.toFloat()
+                        startX.toFloat(),
+                        startY.toFloat(),
+                        x2.toFloat(),
+                        y2.toFloat(),
+                        x3.toFloat(),
+                        y3.toFloat()
                 )
                 startY = y3
                 startX = x3
@@ -105,7 +113,8 @@ constructor(
         }
     }
 
-    private fun isInBounds(yValue: Int, itemHeight: Int, spreadDirection: SpreadDirection): Boolean {
+    private fun isInBounds(yValue: Int, itemHeight: Int,
+                           spreadDirection: SpreadDirection): Boolean {
         return when (spreadDirection) {
             Top -> yValue >= -itemHeight
             else -> yValue <= height + itemHeight
@@ -129,35 +138,36 @@ constructor(
             explosionViewSettings.itemHeight.toFloat()
         }
         return DrawableShardItem(
-            id,
-            explosionViewSettings.drawable.constantState!!
-                .newDrawable(explosionViewSettings.context.resources),
-            explosionViewSettings.itemWidth,
-            explosionViewSettings.itemHeight,
-            getRandomX(targetWidth.toInt()),
-            getInitialY(offsetHeight.toInt(), if(isInBidirectionalMode() && shouldChangeDirectionInBidirectionalMode(id)){
-                getOppsiteSpreadDirection(explosionViewSettings.spreadDirection)
-            }else{
-                explosionViewSettings.spreadDirection
-            }),
-            getRandomAlpha(),
-            scale,
-            getRandomStartDelay(),
-            getRandomAnimDuration()
+                id,
+                explosionViewSettings.drawable.constantState!!
+                        .newDrawable(explosionViewSettings.context.resources),
+                explosionViewSettings.itemWidth,
+                explosionViewSettings.itemHeight,
+                getRandomX(targetWidth.toInt()),
+                getInitialY(offsetHeight.toInt(), if (isInBidirectionalMode() &&
+                        shouldChangeDirectionInBidirectionalMode(id)) {
+                    getOppositeSpreadDirection(explosionViewSettings.spreadDirection)
+                } else {
+                    explosionViewSettings.spreadDirection
+                }),
+                getRandomAlpha(),
+                scale,
+                getRandomStartDelay(),
+                getRandomAnimDuration()
         )
     }
 
     private fun getRandomAnimDuration(): Long {
         return getRandomNumberInRange(
-            explosionViewSettings.minAnimDuration.toFloat(),
-            explosionViewSettings.maxAnimDuration.toFloat()
+                explosionViewSettings.minAnimDuration.toFloat(),
+                explosionViewSettings.maxAnimDuration.toFloat()
         ).toLong()
     }
 
     private fun getRandomStartDelay(): Long {
         return getRandomNumberInRange(
-            explosionViewSettings.minAnimDelay.toFloat(),
-            explosionViewSettings.maxAnimDelay.toFloat()
+                explosionViewSettings.minAnimDelay.toFloat(),
+                explosionViewSettings.maxAnimDelay.toFloat()
         ).toLong()
     }
 
@@ -170,22 +180,22 @@ constructor(
 
     private fun getRandomScale(): Float {
         return getRandomNumberInRange(
-            explosionViewSettings.minScale,
-            explosionViewSettings.maxScale
+                explosionViewSettings.minScale,
+                explosionViewSettings.maxScale
         )
     }
 
     private fun getRandomAlpha(): Float {
         return getRandomNumberInRange(
-            explosionViewSettings.minAlpha,
-            explosionViewSettings.maxAlpha
+                explosionViewSettings.minAlpha,
+                explosionViewSettings.maxAlpha
         )
     }
 
     private fun getRandomX(itemWidth: Int): Int {
         return getRandomNumberInRange(
-            explosionViewSettings.horizontalOffset.toFloat(),
-            (width - explosionViewSettings.horizontalOffset - itemWidth).toFloat()
+                explosionViewSettings.horizontalOffset.toFloat(),
+                (width - explosionViewSettings.horizontalOffset - itemWidth).toFloat()
         ).toInt()
     }
 
@@ -212,16 +222,17 @@ constructor(
         }
     }
 
-    fun attachAnim(shardItem: DrawableShardItem) {
+    fun attachAnim(shardItem: DrawableShardItem, restartAnim: Boolean) {
         tmpAnimators.put(shardItem.id,
-            createTemporaryAnimator(shardItem).apply {
-                start()
-            })
+                createTemporaryAnimator(shardItem, restartAnim).apply {
+                    start()
+                })
     }
 
-    private fun getYDistancePercentage(yValue: Float): Float {
+    private fun getYDistancePercentage(yValue: Float,
+                                       spreadDirection: SpreadDirection): Float {
         val percentage = yValue / height
-        return when (explosionViewSettings.spreadDirection) {
+        return when (spreadDirection) {
             Top -> 1f - percentage
             else -> percentage
         }
@@ -235,22 +246,39 @@ constructor(
         return explosionViewSettings.spreadMode == Bidirectional
     }
 
-    private fun createTemporaryAnimator(shardItem: DrawableShardItem): Animator {
+    private fun getRelativeSpeedOfAnimator(shardItem: DrawableShardItem): Long {
+        val relativeSpeed = (shardItem.getSpeed() * (1f -
+                getYDistancePercentage(shardItem.getY().toFloat(),
+                        if (isInBidirectionalMode() &&
+                                shouldChangeDirectionInBidirectionalMode(shardItem.id)) {
+                            getOppositeSpreadDirection(explosionViewSettings.spreadDirection)
+                        } else {
+                            explosionViewSettings.spreadDirection
+                        }
+                ))).toLong()
+        return when (relativeSpeed >= 0) {
+            true -> relativeSpeed
+            else -> 0
+        }
+    }
+
+    private fun createTemporaryAnimator(shardItem: DrawableShardItem,
+                                        startMainAnimatorWhenFinished: Boolean): Animator {
         val path = createItemPath(
-            shardItem,
-            if (isInBidirectionalMode() && shouldChangeDirectionInBidirectionalMode(shardItem.id)) {
-                getOppsiteSpreadDirection(explosionViewSettings.spreadDirection)
-            } else {
-                explosionViewSettings.spreadDirection
-            }
+                shardItem,
+                if (isInBidirectionalMode() &&
+                        shouldChangeDirectionInBidirectionalMode(shardItem.id)) {
+                    getOppositeSpreadDirection(explosionViewSettings.spreadDirection)
+                } else {
+                    explosionViewSettings.spreadDirection
+                }
         )
         val animator = ObjectAnimator
-            .ofInt(shardItem, DrawableShardItem.X, DrawableShardItem.Y, path)
-            .apply {
-                duration = (shardItem.getSpeed() * (1f -
-                        getYDistancePercentage(shardItem.getY().toFloat()))).toLong()
-                interpolator = LinearInterpolator()
-            }
+                .ofInt(shardItem, DrawableShardItem.X, DrawableShardItem.Y, path)
+                .apply {
+                    duration = getRelativeSpeedOfAnimator(shardItem)
+                    interpolator = LinearInterpolator()
+                }
         animator.addUpdateListener {
             view.get()?.invalidate()
         }
@@ -261,13 +289,15 @@ constructor(
 
             override fun onAnimationEnd(animation: Animator?) {
                 tmpAnimators[shardItem.id]
-                    .apply {
-                        removeAllListeners()
-                        end()
-                        cancel()
-                    }
+                        .apply {
+                            removeAllListeners()
+                            end()
+                            cancel()
+                        }
                 tmpAnimators.remove(shardItem.id)
-                animators[shardItem.id].start()
+                if (startMainAnimatorWhenFinished) {
+                    animators[shardItem.id].start()
+                }
             }
 
             override fun onAnimationCancel(animation: Animator?) {
@@ -278,6 +308,13 @@ constructor(
 
         })
         return animator
+    }
+
+    fun endAnimSmoothly() {
+        drawableShardItems.forEach {
+            detachAnim(it)
+            attachAnim(it, false)
+        }
     }
 
     fun findShardItemByLocation(x: Int, y: Int): DrawableShardItem? {

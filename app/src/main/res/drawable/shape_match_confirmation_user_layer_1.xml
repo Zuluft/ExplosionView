@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <padding
+        android:bottom="@dimen/match_confirmation_screen_user_shape_stroke_width"
+        android:left="@dimen/match_confirmation_screen_user_shape_stroke_width"
+        android:right="@dimen/match_confirmation_screen_user_shape_stroke_width"
+        android:top="@dimen/match_confirmation_screen_user_shape_stroke_width" />
+    <solid android:color="@color/match_confirmation_screen_user_shape_layer_1_color" />
+
+</shape>

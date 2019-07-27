@@ -5,4 +5,11 @@
     <dimen name="main_screen_toolbar_text_elevation">21dp</dimen>
     <dimen name="match_confirmation_screen_header_text_size">19sp</dimen>
     <dimen name="match_confirmation_screen_subtitle_text_size">17sp</dimen>
+    <dimen name="match_confirmation_screen_circle_stroke_width">2dp</dimen>
+    <dimen name="match_confirmation_screen_lightning_item_padding">7dp</dimen>
+    <dimen name="match_confirmation_screen_user_shape_stroke_width">6dp</dimen>
+    <dimen name="primary_btn_corner_radius">100dp</dimen>
+    <dimen name="primary_btn_text_size">15sp</dimen>
+    <dimen name="match_confirmation_screen_explosion_view_elevation">10dp</dimen>
+    <dimen name="match_confirmation_screen_user_name_text_size">15sp</dimen>
 </resources>

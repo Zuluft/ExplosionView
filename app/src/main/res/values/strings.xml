@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">ExplosionView</string>
-    <string name="match_confirmation_screen_title_text">Perfect match</string>
+    <string name="match_confirmation_screen_title_text">perfect match</string>
     <string name="match_confirmation_screen_header_text">congratulations!</string>
-    <string name="match_confirmation_screen_subtitle_text_color">You’ve got a new match</string>
+    <string name="match_confirmation_screen_subtitle_text_color">you’ve got a new match</string>
+    <string name="match_confirmation_screen_search_more_btn_text">search more</string>
+    <string name="match_confirmation_screen_start_chat_btn_text">start chat</string>
 </resources>

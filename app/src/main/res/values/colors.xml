@@ -15,4 +15,12 @@
     <color name="match_confirmation_screen_start_chat_btn_bg_color">@color/colorAccent</color>
     <color name="match_confirmation_screen_search_more_btn_bg_color">@color/colorPrimary</color>
     <color name="match_confirmation_screen_subtitle_text_color">#FFFFFF</color>
+    <color name="match_confirmation_screen_outer_circle_bg_color">#70323540</color>
+    <color name="match_confirmation_screen_outer_circle_bg_stroke_color">@color/colorPrimary</color>
+    <color name="match_confirmation_screen_inner_circle_bg_stroke_color">@color/colorAccent</color>
+    <color name="match_confirmation_screen_user_shape_layer_1_color">@color/colorAccent</color>
+    <color name="match_confirmation_screen_user_shape_layer_2_color">@color/colorPrimary</color>
+    <color name="match_confirmation_screen_user_shape_layer_3_color">#ffffff</color>
+    <color name="primary_btn_text_color">#ffffff</color>
+    <color name="match_confirmation_screen_user_name_text_color">#ffffff</color>
 </resources>

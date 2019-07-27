@@ -12,7 +12,7 @@ fun getSpreadDirection(id: Int): SpreadDirection {
     }
 }
 
-fun getOppsiteSpreadDirection(spreadDirection: SpreadDirection): SpreadDirection {
+fun getOppositeSpreadDirection(spreadDirection: SpreadDirection): SpreadDirection {
     return when (spreadDirection) {
         Top -> Bottom
         else -> Top
