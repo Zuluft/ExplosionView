@@ -28,6 +28,7 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
     val drawable: Drawable
     val spreadMode: SpreadMode
     val isDraggable: Boolean
+    val repeatCount: Int
 
     companion object {
         fun builder(context: Context): Builder {
@@ -79,6 +80,7 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
         spreadDirection = builder.spreadDirection
         spreadMode = builder.spreadMode
         isDraggable = builder.isDraggable
+        repeatCount = builder.repeatCount
         if (minAnimDuration > maxAnimDuration) {
             throw InvalidParameterException("minAnimDuration should be less then maxAnimDuration")
         }
@@ -93,9 +95,12 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
         }
         if (minMoveFactor > maxMoveFactor || minMoveFactor < 0 || maxMoveFactor < 0) {
             throw InvalidParameterException(
-                    "moveFactor should be positive number " +
-                            "and minMoveFactor should be less then maxMoveFactor"
+                "moveFactor should be positive number " +
+                        "and minMoveFactor should be less then maxMoveFactor"
             )
+        }
+        if (repeatCount < -1) {
+            throw InvalidParameterException("repeatCount should not be less then -1")
         }
     }
 
@@ -138,6 +143,8 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
             private set
         var isDraggable: Boolean
             private set
+        var repeatCount: Int
+            private set
 
         constructor(context: Context) : this(context, null)
 
@@ -163,72 +170,76 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
             resources.getValue(R.dimen.defaultMaxAlpha, typedValue, true)
             val defaultMaxAlpha = typedValue.float
             val defaultHorizontalOffset = resources
-                    .getDimensionPixelSize(R.dimen.defaultHorizontalOffset)
+                .getDimensionPixelSize(R.dimen.defaultHorizontalOffset)
             val defaultSpreadDirection = resources
-                    .getInteger(R.integer.defaultSpreadDirection)
+                .getInteger(R.integer.defaultSpreadDirection)
             val defaultSpreadMode = resources.getInteger(R.integer.defaultSpreadMode)
             val defaultIsdraggable = resources.getBoolean(R.bool.defaultIsDraggable)
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ExplosionView)
             itemWidth = typedArray.getDimensionPixelSize(
-                    R.styleable.ExplosionView_itemWidth,
-                    0
+                R.styleable.ExplosionView_itemWidth,
+                0
             )
             itemHeight = typedArray.getDimensionPixelSize(
-                    R.styleable.ExplosionView_itemWidth,
-                    0
+                R.styleable.ExplosionView_itemWidth,
+                0
             )
             itemCount = typedArray.getInteger(
-                    R.styleable.ExplosionView_ItemsCount,
-                    defaultItemsCount
+                R.styleable.ExplosionView_ItemsCount,
+                defaultItemsCount
             )
             minMoveFactor = typedArray.getFloat(R.styleable.ExplosionView_minMoveFactor, defaultMinMoveFactor)
             maxMoveFactor = typedArray.getFloat(R.styleable.ExplosionView_maxMoveFactor, defaultMaxMoveFactor)
             minAnimDuration = typedArray.getInt(
-                    R.styleable.ExplosionView_minAnimDuration,
-                    defaultMinAnimDuration
+                R.styleable.ExplosionView_minAnimDuration,
+                defaultMinAnimDuration
             ).toLong()
             maxAnimDuration = typedArray.getInt(
-                    R.styleable.ExplosionView_maxAnimDuration,
-                    defaultMaxAnimDuration
+                R.styleable.ExplosionView_maxAnimDuration,
+                defaultMaxAnimDuration
             ).toLong()
             minAnimDelay = typedArray.getInt(
-                    R.styleable.ExplosionView_minAnimDelay,
-                    defaultMinAnimDelay
+                R.styleable.ExplosionView_minAnimDelay,
+                defaultMinAnimDelay
             ).toLong()
             maxAnimDelay = typedArray.getInt(
-                    R.styleable.ExplosionView_maxAnimDelay,
-                    defaultMaxAnimDelay
+                R.styleable.ExplosionView_maxAnimDelay,
+                defaultMaxAnimDelay
             ).toLong()
             minScale = typedArray.getFloat(R.styleable.ExplosionView_minScale, defaultMinScale)
             maxScale = typedArray.getFloat(R.styleable.ExplosionView_maxScale, defaultMaxScale)
             minAlpha = typedArray.getFloat(R.styleable.ExplosionView_minAlpha, defaultMinAlpha)
             maxAlpha = typedArray.getFloat(R.styleable.ExplosionView_maxAlpha, defaultMaxAlpha)
             horizontalOffset = typedArray.getDimensionPixelSize(
-                    R.styleable.ExplosionView_horizontalOffset,
-                    defaultHorizontalOffset
+                R.styleable.ExplosionView_horizontalOffset,
+                defaultHorizontalOffset
             )
             spreadDirection = getSpreadDirection(
-                    if (typedArray.hasValue(R.styleable.ExplosionView_spreadDirection)) {
-                        typedArray.getInt(
-                                R.styleable.ExplosionView_spreadDirection,
-                                defaultSpreadDirection
-                        )
-                    } else {
+                if (typedArray.hasValue(R.styleable.ExplosionView_spreadDirection)) {
+                    typedArray.getInt(
+                        R.styleable.ExplosionView_spreadDirection,
                         defaultSpreadDirection
-                    }
+                    )
+                } else {
+                    defaultSpreadDirection
+                }
             )
             spreadMode = getSpreadMode(
-                    if (typedArray.hasValue(R.styleable.ExplosionView_spreadMode)) {
-                        typedArray.getInt(
-                                R.styleable.ExplosionView_spreadMode,
-                                defaultSpreadMode
-                        )
-                    } else {
+                if (typedArray.hasValue(R.styleable.ExplosionView_spreadMode)) {
+                    typedArray.getInt(
+                        R.styleable.ExplosionView_spreadMode,
                         defaultSpreadMode
-                    }
+                    )
+                } else {
+                    defaultSpreadMode
+                }
             )
-            isDraggable = typedArray.getBoolean(R.styleable.ExplosionView_isDraggable,
-                    defaultIsdraggable)
+            isDraggable = typedArray.getBoolean(
+                R.styleable.ExplosionView_isDraggable,
+                defaultIsdraggable
+            )
+
+            repeatCount = typedArray.getInt(R.styleable.ExplosionView_repeatCount, -1)
             drawable = (if (typedArray.hasValue(R.styleable.ExplosionView_drawable)) {
                 typedArray.getDrawable(R.styleable.ExplosionView_drawable)
             } else {
@@ -307,6 +318,10 @@ class ExplosionViewSettings private constructor(private val builder: Builder) {
 
         fun drawable(drawable: Drawable) = apply {
             this.drawable = drawable
+        }
+
+        fun repeatCount(repeatCount: Int) = apply {
+            this.repeatCount = repeatCount
         }
 
         fun build(): ExplosionViewSettings {

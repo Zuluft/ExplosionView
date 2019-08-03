@@ -12,7 +12,7 @@ import kotlin.math.exp
 
 
 class MatchConfirmationFragment :
-        Fragment() {
+    Fragment() {
 
     private lateinit var containerWithTitle: ContainerWithTitle
 
@@ -37,7 +37,7 @@ class MatchConfirmationFragment :
         }
 
         btnSearchMore.setOnClickListener {
-            explosionView.finishSmoothly()
+            explosionView.finish()
         }
     }
 

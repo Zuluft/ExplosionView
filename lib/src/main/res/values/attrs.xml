@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ExplosionView">
-        <attr name="itemWidth" format="dimension" />
-        <attr name="itemHeight" format="dimension" />
-        <attr name="ItemsCount" format="integer" />
-        <attr name="drawable" format="integer" />
-        <attr name="minMoveFactor" format="float" />
-        <attr name="maxMoveFactor" format="float" />
-        <attr name="minAnimDuration" format="integer" />
-        <attr name="maxAnimDuration" format="integer" />
-        <attr name="minAnimDelay" format="integer" />
-        <attr name="maxAnimDelay" format="integer" />
-        <attr name="minScale" format="float" />
-        <attr name="maxScale" format="float" />
-        <attr name="minAlpha" format="float" />
-        <attr name="maxAlpha" format="float" />
-        <attr name="isDraggable" format="boolean" />
-        <attr name="horizontalOffset" format="dimension" />
+        <attr name="itemWidth" format="dimension"/>
+        <attr name="itemHeight" format="dimension"/>
+        <attr name="ItemsCount" format="integer"/>
+        <attr name="drawable" format="integer"/>
+        <attr name="minMoveFactor" format="float"/>
+        <attr name="maxMoveFactor" format="float"/>
+        <attr name="minAnimDuration" format="integer"/>
+        <attr name="maxAnimDuration" format="integer"/>
+        <attr name="minAnimDelay" format="integer"/>
+        <attr name="maxAnimDelay" format="integer"/>
+        <attr name="minScale" format="float"/>
+        <attr name="maxScale" format="float"/>
+        <attr name="minAlpha" format="float"/>
+        <attr name="maxAlpha" format="float"/>
+        <attr name="isDraggable" format="boolean"/>
+        <attr name="horizontalOffset" format="dimension"/>
         <attr name="spreadDirection" format="enum">
-            <enum name="TOP" value="0" />
-            <enum name="BOTTOM" value="1" />
+            <enum name="TOP" value="0"/>
+            <enum name="BOTTOM" value="1"/>
         </attr>
         <attr name="spreadMode" format="enum">
-            <enum name="UNIDIRECTIONAL" value="0" />
-            <enum name="BIDIRECTIONAL" value="1" />
+            <enum name="UNIDIRECTIONAL" value="0"/>
+            <enum name="BIDIRECTIONAL" value="1"/>
         </attr>
+        <attr name="repeatCount" format="integer"/>
     </declare-styleable>
 
     <dimen name="defaultItemWidth">40dp</dimen>
