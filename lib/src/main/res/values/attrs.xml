@@ -44,4 +44,5 @@
     <integer name="defaultSpreadDirection">0</integer>
     <integer name="defaultSpreadMode">0</integer>
     <bool name="defaultIsDraggable">false</bool>
+    <integer name="defaultRepeatCount">-1</integer>
 </resources>
