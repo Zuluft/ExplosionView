@@ -8,20 +8,31 @@
 
 # Quick start guide
 
-## 1. Declare view in xml
+## 1. Declare ```ExplosionView``` in xml
 
 ```xml
-<com.zuluft.lib.ExplosionView
-            android:id="@+id/explosionView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-    />
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <com.zuluft.lib.ExplosionView
+        android:id="@+id/explosionView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
 ## 2. Get ```ExplosionView``` object and call ```start()``` method
 
 ```kotlin
- explosionView.start()
+  override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        explosionView.start()
+    }
 ```
  
 
