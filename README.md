@@ -6,6 +6,25 @@
 <img width="880" height="480" src="preview.gif">
 </p>
 
+# Quick start guide
+
+## 1. Declare view in xml
+
+```xml
+<com.zuluft.lib.ExplosionView
+            android:id="@+id/explosionView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+    />
+```
+
+## 2. Get ```ExplosionView``` object and call ```start()``` method
+
+```kotlin
+ explosionView.start()
+```
+ 
+
 # Documentation
 
 * [Installation](#installation)
