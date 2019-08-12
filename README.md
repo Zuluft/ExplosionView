@@ -140,7 +140,7 @@ Default value: ```0.8```
 
 ### Animation duration
 
-Animation duration controls, how much time should take one item's moving scene.
+Animation duration controls how much time should take one item's moving scene.
 
 Animation duration values for the items are distributed randomly between ```minAnimDuration``` and ```maxAnimDuration```.
 
